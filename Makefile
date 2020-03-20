@@ -7,7 +7,7 @@ COMMIT=$(shell git rev-parse --short HEAD)
 all: dev
 
 dev: build
-	@./tube
+	@./tube -v
 
 build: clean
 		@go build \

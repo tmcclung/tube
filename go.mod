@@ -7,6 +7,8 @@ require (
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gorilla/feeds v1.1.1
 	github.com/gorilla/mux v1.7.2
+	github.com/sirupsen/logrus v1.4.2
+	github.com/spf13/pflag v1.0.5
 	github.com/wybiral/feeds v1.1.1
 	github.com/wybiral/torgo v0.0.0-20190413024533-a19a6c8a5048
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
