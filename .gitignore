@@ -1,4 +1,9 @@
+*~
+*.bak
+*.key
+
+/dist
+/tube
+
 videos/*
 !videos/README.md
-onion.key
-build/bin
