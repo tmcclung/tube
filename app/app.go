@@ -2,19 +2,19 @@
 package app
 
 import (
-	"errors"
-	"fmt"
 	"html/template"
 	"log"
 	"net"
 	"net/http"
 	"path"
 
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/mux"
-	"github.com/wybiral/tube/pkg/media"
-	"github.com/wybiral/tube/pkg/onionkey"
+	"github.com/wybiral/tube/media"
 )
+
+//go:generate rice embed-go
 
 // App represents main application.
 type App struct {
@@ -23,7 +23,6 @@ type App struct {
 	Watcher   *fsnotify.Watcher
 	Templates *template.Template
 	Feed      []byte
-	Tor       *tor
 	Listener  net.Listener
 	Router    *mux.Router
 }
@@ -51,15 +50,10 @@ func NewApp(cfg *Config) (*App, error) {
 	}
 	a.Listener = ln
 	// Setup Templates
-	a.Templates = template.Must(template.ParseGlob("templates/*"))
-	// Setup Tor
-	if cfg.Tor.Enable {
-		t, err := newTor(cfg.Tor)
-		if err != nil {
-			return nil, err
-		}
-		a.Tor = t
-	}
+	box := rice.MustFindBox("../templates")
+	index := template.New("index")
+	a.Templates = template.Must(index.Parse(box.MustString("index.html")))
+
 	// Setup Router
 	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/", a.indexHandler).Methods("GET")
@@ -72,8 +66,8 @@ func NewApp(cfg *Config) (*App, error) {
 	r.HandleFunc("/feed.xml", a.rssHandler).Methods("GET")
 	// Static file handler
 	fsHandler := http.StripPrefix(
-		"/static/",
-		http.FileServer(http.Dir("./static/")),
+		"/static",
+		http.FileServer(rice.MustFindBox("../static").HTTPBox()),
 	)
 	r.PathPrefix("/static/").Handler(fsHandler).Methods("GET")
 	a.Router = r
@@ -82,28 +76,6 @@ func NewApp(cfg *Config) (*App, error) {
 
 // Run imports the library and starts server.
 func (a *App) Run() error {
-	if a.Tor != nil {
-		var err error
-		cs := a.Config.Server
-		key := a.Tor.OnionKey
-		if key == nil {
-			key, err = onionkey.GenerateKey()
-			if err != nil {
-				return err
-			}
-			a.Tor.OnionKey = key
-		}
-		onion, err := key.Onion()
-		if err != nil {
-			return err
-		}
-		onion.Ports[80] = fmt.Sprintf("%s:%d", cs.Host, cs.Port)
-		err = a.Tor.Controller.AddOnion(onion)
-		if err != nil {
-			return errors.New("unable to start Tor onion service")
-		}
-		log.Printf("Onion service: http://%s.onion", onion.ServiceID)
-	}
 	for _, pc := range a.Config.Library {
 		p := &media.Path{
 			Path:   pc.Path,
@@ -131,7 +103,7 @@ func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 	if len(pl) > 0 {
 		http.Redirect(w, r, "/v/"+pl[0].ID, 302)
 	} else {
-		a.Templates.ExecuteTemplate(w, "index.html", &struct {
+		a.Templates.ExecuteTemplate(w, "index", &struct {
 			Playing  *media.Video
 			Playlist media.Playlist
 		}{
@@ -152,7 +124,7 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/v/%s", id)
 	playing, ok := a.Library.Videos[id]
 	if !ok {
-		a.Templates.ExecuteTemplate(w, "index.html", &struct {
+		a.Templates.ExecuteTemplate(w, "index", &struct {
 			Playing  *media.Video
 			Playlist media.Playlist
 		}{
@@ -162,7 +134,7 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	a.Templates.ExecuteTemplate(w, "index.html", &struct {
+	a.Templates.ExecuteTemplate(w, "index", &struct {
 		Playing  *media.Video
 		Playlist media.Playlist
 	}{
@@ -207,7 +179,7 @@ func (a *App) thumbHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "public, max-age=7776000")
 	if m.ThumbType == "" {
 		w.Header().Set("Content-Type", "image/jpeg")
-		http.ServeFile(w, r, "static/defaulticon.jpg")
+		w.Write(rice.MustFindBox("../static").MustBytes("defaulticon.jpg"))
 	} else {
 		w.Header().Set("Content-Type", m.ThumbType)
 		w.Write(m.Thumb)

@@ -29,12 +29,6 @@ func buildFeed(a *App) {
 	var externalURL string
 	if len(cfg.ExternalURL) > 0 {
 		externalURL = cfg.ExternalURL
-	} else if a.Tor != nil {
-		onion, err := a.Tor.OnionKey.Onion()
-		if err != nil {
-			return
-		}
-		externalURL = fmt.Sprintf("http://%s.onion", onion.ServiceID)
 	} else {
 		hostname, err := os.Hostname()
 		if err != nil {

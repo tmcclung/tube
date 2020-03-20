@@ -1,4 +1,4 @@
-.PHONY: dev build install test release clean
+.PHONY: dev setup build install test release clean
 
 CGO_ENABLED=0
 VERSION=$(shell git describe --abbrev=0 --tags)
@@ -9,8 +9,12 @@ all: dev
 dev: build
 	@./tube -v
 
+setup:
+	@go get github.com/GeertJohan/go.rice/rice
+
 build: clean
-		@go build \
+	@go generate $(shell go list)/...
+	@go build \
 		-tags "netgo static_build" -installsuffix netgo \
 		-ldflags "-w -X $(shell go list).Version=$(VERSION) -X $(shell go list).Commit=$(COMMIT)" \
 		.

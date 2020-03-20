@@ -6,7 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
-	"github.com/wybiral/tube/pkg/app"
+	"github.com/wybiral/tube/app"
 )
 
 var (
