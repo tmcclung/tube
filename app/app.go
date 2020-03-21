@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -15,6 +14,7 @@ import (
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"github.com/wybiral/tube/media"
 )
 
@@ -146,7 +146,6 @@ func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 // HTTP handler for /upload
 func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		log.Printf("GET /upload")
 		ctx := &struct{}{}
 		a.render("upload", w, ctx)
 	} else if r.Method == "POST" {
@@ -156,6 +155,7 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 		file, handler, err := r.FormFile("video_file")
 		if err != nil {
 			err := fmt.Errorf("error processing form: %w", err)
+			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -168,6 +168,7 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 		f, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0755)
 		if err != nil {
 			err := fmt.Errorf("error opening file for writing: %w", err)
+			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -176,6 +177,7 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 		_, err = io.Copy(f, file)
 		if err != nil {
 			err := fmt.Errorf("error writing file: %w", err)
+			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

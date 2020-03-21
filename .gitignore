@@ -4,6 +4,7 @@
 
 /dist
 /tube
+/.DS_Store
 
 videos/*
 !videos/README.md
