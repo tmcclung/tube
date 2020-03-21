@@ -1,0 +1,28 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="/static/theme.css">
+
+    {{ template "stylesheets" . }}
+    {{ template "css" . }}
+    <title>Tube</title>
+  </head>
+<body>
+  <nav>
+    <a href="/">Tube</a>
+    <a href="/upload">Upload</a>
+  </nav>
+  <main>
+    {{template "content" .}}
+  </main>
+</body>
+{{ template "scripts" . }}
+</html>
+{{end}}
+{{ define "css" }}{{ end }}
+{{ define "scripts" }}{{ end }}
+{{ define "stylesheets" }}{{ end }}

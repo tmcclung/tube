@@ -2,11 +2,15 @@
 package app
 
 import (
+	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"path"
+	"path/filepath"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/fsnotify/fsnotify"
@@ -21,7 +25,7 @@ type App struct {
 	Config    *Config
 	Library   *media.Library
 	Watcher   *fsnotify.Watcher
-	Templates *template.Template
+	Templates *templateStore
 	Feed      []byte
 	Listener  net.Listener
 	Router    *mux.Router
@@ -49,14 +53,26 @@ func NewApp(cfg *Config) (*App, error) {
 		return nil, err
 	}
 	a.Listener = ln
-	// Setup Templates
+
+	// Templates
 	box := rice.MustFindBox("../templates")
-	index := template.New("index")
-	a.Templates = template.Must(index.Parse(box.MustString("index.html")))
+
+	a.Templates = newTemplateStore("base")
+
+	indexTemplate := template.New("index")
+	template.Must(indexTemplate.Parse(box.MustString("index.html")))
+	template.Must(indexTemplate.Parse(box.MustString("base.html")))
+	a.Templates.Add("index", indexTemplate)
+
+	uploadTemplate := template.New("upload")
+	template.Must(uploadTemplate.Parse(box.MustString("upload.html")))
+	template.Must(uploadTemplate.Parse(box.MustString("base.html")))
+	a.Templates.Add("upload", uploadTemplate)
 
 	// Setup Router
 	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/", a.indexHandler).Methods("GET")
+	r.HandleFunc("/upload", a.uploadHandler).Methods("GET", "POST")
 	r.HandleFunc("/v/{id}.mp4", a.videoHandler).Methods("GET")
 	r.HandleFunc("/v/{prefix}/{id}.mp4", a.videoHandler).Methods("GET")
 	r.HandleFunc("/t/{id}", a.thumbHandler).Methods("GET")
@@ -96,6 +112,18 @@ func (a *App) Run() error {
 	return http.Serve(a.Listener, a.Router)
 }
 
+func (a *App) render(name string, w http.ResponseWriter, ctx interface{}) {
+	buf, err := a.Templates.Exec(name, ctx)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	_, err = buf.WriteTo(w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 // HTTP handler for /
 func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/")
@@ -103,13 +131,60 @@ func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 	if len(pl) > 0 {
 		http.Redirect(w, r, "/v/"+pl[0].ID, 302)
 	} else {
-		a.Templates.ExecuteTemplate(w, "index", &struct {
+		ctx := &struct {
 			Playing  *media.Video
 			Playlist media.Playlist
 		}{
 			Playing:  &media.Video{ID: ""},
 			Playlist: a.Library.Playlist(),
-		})
+		}
+
+		a.render("index", w, ctx)
+	}
+}
+
+// HTTP handler for /upload
+func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		log.Printf("GET /upload")
+		ctx := &struct{}{}
+		a.render("upload", w, ctx)
+	} else if r.Method == "POST" {
+		// TODO: Move to a constant
+		r.ParseMultipartForm((10 << 20) * 10) // 100MB
+
+		file, handler, err := r.FormFile("video_file")
+		if err != nil {
+			err := fmt.Errorf("error processing form: %w", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer file.Close()
+
+		// TODO: Allow the user to pick this and don't hard code it.
+		collection := "videos"
+		fn := filepath.Join(collection, handler.Filename)
+
+		f, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0755)
+		if err != nil {
+			err := fmt.Errorf("error opening file for writing: %w", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer f.Close()
+
+		_, err = io.Copy(f, file)
+		if err != nil {
+			err := fmt.Errorf("error writing file: %w", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		a.Library.Add(fn)
+
+		fmt.Fprintf(w, "Successfully uploaded video: %s", handler.Filename)
+	} else {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -124,23 +199,25 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/v/%s", id)
 	playing, ok := a.Library.Videos[id]
 	if !ok {
-		a.Templates.ExecuteTemplate(w, "index", &struct {
+		ctx := &struct {
 			Playing  *media.Video
 			Playlist media.Playlist
 		}{
 			Playing:  &media.Video{ID: ""},
 			Playlist: a.Library.Playlist(),
-		})
+		}
+		a.render("upload", w, ctx)
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	a.Templates.ExecuteTemplate(w, "index", &struct {
+	ctx := &struct {
 		Playing  *media.Video
 		Playlist media.Playlist
 	}{
 		Playing:  playing,
 		Playlist: a.Library.Playlist(),
-	})
+	}
+	a.render("index", w, ctx)
 }
 
 // HTTP handler for /v/id.mp4
