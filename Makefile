@@ -13,6 +13,7 @@ setup:
 	@go get github.com/GeertJohan/go.rice/rice
 
 build: clean
+	@command -v rice > /dev/null || make setup
 	@go generate $(shell go list)/...
 	@go build \
 		-tags "netgo static_build" -installsuffix netgo \
