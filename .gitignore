@@ -8,3 +8,6 @@
 
 videos/*
 !videos/README.md
+
+uploads/*
+!uploads/README.md

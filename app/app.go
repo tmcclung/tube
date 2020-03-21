@@ -14,6 +14,7 @@ import (
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/mux"
+	"github.com/renstrom/shortuuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/wybiral/tube/media"
 )
@@ -161,11 +162,9 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		defer file.Close()
 
-		// TODO: Allow the user to pick this and don't hard code it.
-		collection := "videos"
-		fn := filepath.Join(collection, handler.Filename)
+		fn := filepath.Join("uploads", fmt.Sprintf("%s%s", shortuuid.New(), filepath.Ext(handler.Filename)))
 
-		f, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0755)
+		f, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0644)
 		if err != nil {
 			err := fmt.Errorf("error opening file for writing: %w", err)
 			log.Error(err)
@@ -184,7 +183,7 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 		a.Library.Add(fn)
 
-		fmt.Fprintf(w, "Successfully uploaded video: %s", handler.Filename)
+		fmt.Fprintf(w, "Video successfully uploaded! It will be available shortly...")
 	} else {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}

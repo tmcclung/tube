@@ -36,7 +36,7 @@ func main() {
 	}
 
 	if version {
-		fmt.Printf("ed version %s", FullVersion())
+		fmt.Printf("tube version %s", FullVersion())
 		os.Exit(0)
 	}
 
