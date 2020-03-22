@@ -302,3 +302,33 @@ input[type=button] {
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#bbb', endColorstr='#eee')";
     background: linear-gradient(#000000, #1e1e1e);
 }
+
+.fileContainer {
+    overflow: hidden;
+    position: relative;
+}
+
+label.filebutton {
+    width:120px;
+    height:40px;
+    overflow:hidden;
+    position:relative;
+    background:linear-gradient(#000000, #1e1e1e);
+    box-shadow: 0 0 5px #ccc;
+}
+
+label span input {
+    z-index: 999;
+    line-height: 0;
+    font-size: 50px;
+    position: absolute;
+    top: -2px;
+    left: -700px;
+    opacity: 0;
+    filter: alpha(opacity = 0);
+    -ms-filter: "alpha(opacity=0)";
+    cursor: pointer;
+    _cursor: hand;
+    margin: 0;
+    padding:0;
+}
