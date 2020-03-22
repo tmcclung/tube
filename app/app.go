@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	rice "github.com/GeertJohan/go.rice"
@@ -166,7 +167,14 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 		defer file.Close()
 
 		// TODO: Make collection user selectable from drop-down in Form
-		collection := "videos"
+		// XXX: Assume we can put uploaded videos into the first collection (sorted) we find
+		keys := make([]string, 0, len(a.Library.Paths))
+		for k := range a.Library.Paths {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		collection := keys[0]
+
 		fn := filepath.Join(
 			a.Config.Server.UploadPath,
 			fmt.Sprintf(
