@@ -4,7 +4,7 @@ FROM prologic/go-builder:latest AS build
 # Runtime
 FROM golang:alpine
 
-RUN apk --no-cache -U add git build-base ffmpeg-dev
+RUN apk --no-cache -U add git build-base ffmpeg ffmpeg-dev
 
 RUN go get github.com/mutschler/mt
 
