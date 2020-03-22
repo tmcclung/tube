@@ -40,6 +40,16 @@ nav {
     height: 50px;
     background: #171717;
     border-bottom: 1px solid #272727;
+    position: relative;
+    overflow: hidden;
+}
+
+nav a.centered {
+  float: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 main {
