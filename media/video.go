@@ -81,7 +81,7 @@ func ParseVideo(p *Path, name string) (*Video, error) {
 	} else if utils.CmdExists("mt") {
 		thumbFn := fmt.Sprintf("%s.jpg", strings.TrimSuffix(pth, filepath.Ext(pth)))
 		if !utils.FileExists(thumbFn) {
-			if err := utils.RunCmd(10, "mt", "-s", "-n", "1", pth); err != nil {
+			if err := utils.RunCmd(30, "mt", "-b", "-s", "-n", "1", pth); err != nil {
 				err := fmt.Errorf("error generating thumbnail: %w", err)
 				log.Error(err.Error())
 				return nil, err
