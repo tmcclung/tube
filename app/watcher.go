@@ -1,9 +1,11 @@
 package app
 
 import (
+	"path/filepath"
 	"time"
 
 	fs "github.com/fsnotify/fsnotify"
+	log "github.com/sirupsen/logrus"
 )
 
 // This is the amount of time to wait after changes before reacting to them.
@@ -27,6 +29,10 @@ func startWatcher(a *App) {
 	for {
 		select {
 		case e := <-a.Watcher.Events:
+			if filepath.Ext(e.Name) != ".mp4" {
+				continue
+			}
+			log.Debugf("fsnotify event: %s", e)
 			if e.Op&removeFlags != 0 {
 				removeEvents[e.Name] = struct{}{}
 			}
