@@ -7,9 +7,10 @@ import (
 
 // Config settings for main App.
 type Config struct {
-	Library []*PathConfig `json:"library"`
-	Server  *ServerConfig `json:"server"`
-	Feed    *FeedConfig   `json:"feed"`
+	Library    []*PathConfig     `json:"library"`
+	Server     *ServerConfig     `json:"server"`
+	Transcoder *TranscoderConfig `json:"transcoder"`
+	Feed       *FeedConfig       `json:"feed"`
 }
 
 // PathConfig settings for media library path.
@@ -23,6 +24,11 @@ type ServerConfig struct {
 	Host       string `json:"host"`
 	Port       int    `json:"port"`
 	UploadPath string `json:"upload_path"`
+}
+
+// TranscoderConfig settings for Transcoder
+type TranscoderConfig struct {
+	Timeout int `json:"timeout"`
 }
 
 // FeedConfig settings for App Feed.
@@ -48,8 +54,12 @@ func DefaultConfig() *Config {
 			},
 		},
 		Server: &ServerConfig{
-			Host: "127.0.0.1",
-			Port: 0,
+			Host:       "127.0.0.1",
+			Port:       0,
+			UploadPath: "uploads",
+		},
+		Transcoder: &TranscoderConfig{
+			Timeout: 60,
 		},
 		Feed: &FeedConfig{
 			ExternalURL: "http://localhost",

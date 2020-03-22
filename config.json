@@ -10,6 +10,9 @@
         "port": 8000,
         "upload_path": "uploads"
     },
+    "transcoder": {
+        "timeout": 120
+    },
     "feed": {
         "external_url": "",
         "title": "Feed Title",

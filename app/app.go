@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"sort"
-	"strings"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/fsnotify/fsnotify"
@@ -174,25 +174,19 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 		sort.Strings(keys)
 		collection := keys[0]
 
-		fn := filepath.Join(
+		uf, err := ioutil.TempFile(
 			a.Config.Server.UploadPath,
-			fmt.Sprintf(
-				"%s%s",
-				shortuuid.New(),
-				filepath.Ext(handler.Filename),
-			),
+			fmt.Sprintf("tube-upload-*%s", filepath.Ext(handler.Filename)),
 		)
-
-		f, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0644)
 		if err != nil {
-			err := fmt.Errorf("error opening file for writing: %w", err)
+			err := fmt.Errorf("error creating temporary file for uploading: %w", err)
 			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer f.Close()
+		defer os.Remove(uf.Name())
 
-		_, err = io.Copy(f, file)
+		_, err = io.Copy(uf, file)
 		if err != nil {
 			err := fmt.Errorf("error writing file: %w", err)
 			log.Error(err)
@@ -200,26 +194,33 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		of := filepath.Join(
+		tf, err := ioutil.TempFile(
+			a.Config.Server.UploadPath,
+			fmt.Sprintf("tube-transcode-*.mp4"),
+		)
+		if err != nil {
+			err := fmt.Errorf("error creating temporary file for transcoding: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		vf := filepath.Join(
 			a.Library.Paths[collection].Path,
-			fmt.Sprintf(
-				"%s.mp4",
-				strings.TrimSuffix(filepath.Base(fn), filepath.Ext(fn)),
-			),
+			fmt.Sprintf("%s.mp4", shortuuid.New()),
 		)
 
 		// TODO: Use a proper Job Queue and make this async
 		if err := utils.RunCmd(
-			// TODO: Make thie timeout configurable?
-			60,
+			a.Config.Transcoder.Timeout,
 			"ffmpeg",
 			"-y",
-			"-i", fn,
+			"-i", uf.Name(),
 			"-vcodec", "h264",
 			"-acodec", "aac",
 			"-strict", "-2",
 			"-loglevel", "quiet",
-			of,
+			tf.Name(),
 		); err != nil {
 			err := fmt.Errorf("error transcoding video: %w", err)
 			log.Error(err)
@@ -227,15 +228,8 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := os.Remove(fn); err != nil {
-			err := fmt.Errorf("error removing uploaded file: %w", err)
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if err := a.Library.Add(of); err != nil {
-			err := fmt.Errorf("error adding new video: %w", err)
+		if err := os.Rename(tf.Name(), vf); err != nil {
+			err := fmt.Errorf("error renaming transcoded video: %w", err)
 			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
