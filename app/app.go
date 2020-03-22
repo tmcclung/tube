@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -201,15 +200,6 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		tf, err := ioutil.TempFile("", "tube-upload-*.mp4")
-		if err != nil {
-			err := fmt.Errorf("error creating tempory file: %w", err)
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		defer os.Remove(tf.Name())
-
 		of := filepath.Join(
 			a.Library.Paths[collection].Path,
 			fmt.Sprintf(
@@ -229,7 +219,7 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 			"-acodec", "aac",
 			"-strict", "-2",
 			"-loglevel", "quiet",
-			tf.Name(),
+			of,
 		); err != nil {
 			err := fmt.Errorf("error transcoding video: %w", err)
 			log.Error(err)
@@ -237,15 +227,8 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := os.Rename(tf.Name(), of); err != nil {
-			err := fmt.Errorf("error renaming temporary file to output file: %w", err)
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
 		if err := os.Remove(fn); err != nil {
-			err := fmt.Errorf("error removing file: %w", err)
+			err := fmt.Errorf("error removing uploaded file: %w", err)
 			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
