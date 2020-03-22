@@ -240,13 +240,6 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 		os.Rename(tf.Name(), of)
 		os.Remove(fn)
 
-		if err := a.Library.Add(of); err != nil {
-			err := fmt.Errorf("error adding new video: %w", err)
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
 		fmt.Fprintf(w, "Video successfully uploaded!")
 	} else {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
