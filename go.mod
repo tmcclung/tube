@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/GeertJohan/go.rice v1.0.0
+	github.com/apex/log v1.1.2
 	github.com/dhowden/tag v0.0.0-20190519100835-db0c67e351b1
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/google/uuid v1.1.1 // indirect

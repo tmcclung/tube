@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/dhowden/tag"
+
+	"github.com/wybiral/tube/utils"
 )
 
 // Video represents metadata for a single video.
@@ -75,8 +77,8 @@ func ParseVideo(p *Path, name string) (*Video, error) {
 	if pic != nil {
 		v.Thumb = pic.Data
 		v.ThumbType = pic.MIMEType
-	} else if cmdExists("mt") {
-		if err := runCmd(3, "mt", "-s", "-n", "1", pth); err != nil {
+	} else if utils.CmdExists("mt") {
+		if err := utils.RunCmd(3, "mt", "-s", "-n", "1", pth); err != nil {
 			return nil, err
 		}
 		data, err := ioutil.ReadFile(fmt.Sprintf("%s.jpg", strings.TrimSuffix(pth, filepath.Ext(pth))))

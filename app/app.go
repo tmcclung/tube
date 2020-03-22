@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/fsnotify/fsnotify"
@@ -17,6 +19,7 @@ import (
 	"github.com/renstrom/shortuuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/wybiral/tube/media"
+	"github.com/wybiral/tube/utils"
 )
 
 //go:generate rice embed-go
@@ -162,7 +165,16 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		defer file.Close()
 
-		fn := filepath.Join("uploads", fmt.Sprintf("%s%s", shortuuid.New(), filepath.Ext(handler.Filename)))
+		// TODO: Make collection user selectable from drop-down in Form
+		collection := "videos"
+		fn := filepath.Join(
+			a.Config.Server.UploadPath,
+			fmt.Sprintf(
+				"%s%s",
+				shortuuid.New(),
+				filepath.Ext(handler.Filename),
+			),
+		)
 
 		f, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0644)
 		if err != nil {
@@ -181,9 +193,53 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		a.Library.Add(fn)
+		tf, err := ioutil.TempFile("", "tube-upload-*.mp4")
+		if err != nil {
+			err := fmt.Errorf("error creating tempory file: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer os.Remove(tf.Name())
 
-		fmt.Fprintf(w, "Video successfully uploaded! It will be available shortly...")
+		of := filepath.Join(
+			a.Library.Paths[collection].Path,
+			fmt.Sprintf(
+				"%s.mp4",
+				strings.TrimSuffix(filepath.Base(fn), filepath.Ext(fn)),
+			),
+		)
+
+		// TODO: Use a proper Job Queue and make this async
+		if err := utils.RunCmd(
+			// TODO: Make thie timeout configurable?
+			60,
+			"ffmpeg",
+			"-y",
+			"-i", fn,
+			"-vcodec", "h264",
+			"-acodec", "aac",
+			"-strict", "-2",
+			"-loglevel", "quiet",
+			tf.Name(),
+		); err != nil {
+			err := fmt.Errorf("error transcoding video: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		os.Rename(tf.Name(), of)
+		os.Remove(fn)
+
+		if err := a.Library.Add(of); err != nil {
+			err := fmt.Errorf("error adding new video: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintf(w, "Video successfully uploaded!")
 	} else {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}

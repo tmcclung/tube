@@ -20,8 +20,9 @@ type PathConfig struct {
 
 // ServerConfig settings for App Server.
 type ServerConfig struct {
-	Host string `json:"host"`
-	Port int    `json:"port"`
+	Host       string `json:"host"`
+	Port       int    `json:"port"`
+	UploadPath string `json:"upload_path"`
 }
 
 // FeedConfig settings for App Feed.
