@@ -237,8 +237,19 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		os.Rename(tf.Name(), of)
-		os.Remove(fn)
+		if err := os.Rename(tf.Name(), of); err != nil {
+			err := fmt.Errorf("error renaming temporary file to output file: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err := os.Remove(fn); err != nil {
+			err := fmt.Errorf("error removing file: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		fmt.Fprintf(w, "Video successfully uploaded!")
 	} else {
