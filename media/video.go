@@ -79,10 +79,13 @@ func ParseVideo(p *Path, name string) (*Video, error) {
 		v.Thumb = pic.Data
 		v.ThumbType = pic.MIMEType
 	} else if utils.CmdExists("mt") {
-		if err := utils.RunCmd(10, "mt", "-s", "-n", "1", pth); err != nil {
-			err := fmt.Errorf("error generating thumbnail: %w", err)
-			log.Error(err.Error())
-			return nil, err
+		thumbFn := fmt.Sprintf("%s.jpg", strings.TrimSuffix(pth, filepath.Ext(pth)))
+		if !utils.FileExists(thumbFn) {
+			if err := utils.RunCmd(10, "mt", "-s", "-n", "1", pth); err != nil {
+				err := fmt.Errorf("error generating thumbnail: %w", err)
+				log.Error(err.Error())
+				return nil, err
+			}
 		}
 		data, err := ioutil.ReadFile(fmt.Sprintf("%s.jpg", strings.TrimSuffix(pth, filepath.Ext(pth))))
 		if err != nil {

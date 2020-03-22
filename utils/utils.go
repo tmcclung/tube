@@ -3,9 +3,20 @@ package utils
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"time"
 )
+
+// FileExists ...
+func FileExists(name string) bool {
+	if _, err := os.Stat(name); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
+}
 
 // CmdExists ...
 func CmdExists(cmd string) bool {
