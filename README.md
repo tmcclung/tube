@@ -34,3 +34,10 @@ By default the server is configured to run on 127.0.0.1:0 which will assign a ra
 4. `go run main.go` (this will output the URL for accessing from a browser)
 5. Move videos to `$GOPATH/src/github.com/wybiral/tube/videos`
 6. Open the URL from step 4 and enjoy!
+
+## License
+
+tube source code is available under the MIT [License](/LICENSE).
+
+Previously based off of [tube](https://github.com/wybiral/tube) by [davy wybiral
+](https://github.com/wybiral). (See [LICENSE.old](/LICENSE.old))
