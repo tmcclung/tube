@@ -1,38 +1,35 @@
 {{define "content"}}
-  <div id="upload">
-    <form id="upload_form" enctype="multipart/form-data" method="POST" action="/upload">
-      <div>
-        <label class="filebutton">
-          Select a video to upload...
-          <span><input type="file" name="video_file" id="video_file" accept="video/*" onchange="fileSelected();" /></span>
-        </label>
+  <div style="text-align: center;">
+    <label class="upload-container" onclick="labelClicked(event)">
+      <div class="upload-wrapper">
+        <form id="upload-form" class="upload-form" enctype="multipart/form-data" method="POST" action="/upload">
+          <input id="video-input" type="file" accept="video/*" onchange="fileSelected()" style="display: none;"/>
+          <div class="upload-box">
+            <img width="100" src="/static/upload-icon.png"/>
+            <span>Click to browse or drop file here</span>
+          </div>
+          <div class="upload-details">
+            <div id="upload-file" class="upload-file">
+              <span id="upload-filename"></span>
+              <img width="20" src="/static/close-icon.png" onclick="removeFile(event)"/>
+            </div>
+            <span id="upload-message" class="upload-message">No file selected</span>
+            <div id="upload-button-wrapper" class="upload-button-wrapper">
+              <button id="upload-button" class="upload-button" onclick="startUploading()" type="button">
+                <span id="upload-stopped">Upload</span>
+                <span id="upload-started" class="loader" style="display: none;"></span>
+              </button>
+            </div>
+            <div id="upload-progress-container" class="upload-progress-container">
+              <div id="upload-progress" class="upload-progress">
+                <span id="upload-progress-label" class="upload-progress-label"></span>
+              </div>
+              <div style="flex-grow: 1;"></div>
+            </div>
+          </div>
+        </form>
       </div>
-
-      <div>
-        <input type="button" value="Upload" onclick="startUploading()" />
-      </div>
-
-      <div id="error">You should select valid image files only!</div>
-      <div id="error2">An error occurred while uploading the file</div>
-      <div id="abort">The upload has been canceled by the user or the browser dropped the connection</div>
-      <div id="warnsize">Your file is very big. We can't accept it. Please select more small file</div>
-
-      <div id="progress_info">
-        <div id="progress"></div>
-        <div id="progress_percent">&nbsp;</div>
-        <div class="clear_both"></div>
-        <div>
-          <div id="speed">&nbsp;</div>
-          <div id="remaining">&nbsp;</div>
-          <div id="b_transfered">&nbsp;</div>
-          <div class="clear_both"></div>
-        </div>
-
-        <div id="upload_response">
-          <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-        </div>
-      </div>
-    </form>
+    </label>
   </div>
 {{end}}
 {{define "scripts"}}

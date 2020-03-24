@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/static/theme.css">
+    <link rel="stylesheet" type="text/css" href="/static/upload.css">
 
     {{ template "stylesheets" . }}
     {{ template "css" . }}
@@ -14,7 +15,7 @@
 <body>
   <nav>
     <a href="/">Tube</a>
-    <a class="centered" href="/upload">Upload</a>
+    <a class="centered" style="text-indent: 0;" href="/upload">Upload</a>
   </nav>
   <main>
     {{template "content" .}}
