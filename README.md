@@ -1,4 +1,4 @@
-# tube,
+# tube
 
 `tube` is a Youtube-like (_without censorship and features you don't need!_)
 Video Sharing App written in Go which also supports automatic transcoding to
