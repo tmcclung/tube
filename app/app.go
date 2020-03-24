@@ -15,6 +15,7 @@ import (
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/fsnotify/fsnotify"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/renstrom/shortuuid"
 	log "github.com/sirupsen/logrus"
@@ -113,7 +114,7 @@ func (a *App) Run() error {
 	}
 	buildFeed(a)
 	go startWatcher(a)
-	return http.Serve(a.Listener, a.Router)
+	return http.Serve(a.Listener, handlers.CORS()(a.Router))
 }
 
 func (a *App) render(name string, w http.ResponseWriter, ctx interface{}) {

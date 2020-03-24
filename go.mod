@@ -12,6 +12,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gorilla/feeds v1.1.1
+	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.2
 	github.com/koyachi/go-nude v0.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
