@@ -93,7 +93,18 @@ func NewApp(cfg *Config) (*App, error) {
 	r.PathPrefix("/static/").Handler(fsHandler).Methods("GET")
 
 	cors := handlers.CORS(
-		handlers.AllowedHeaders([]string{"content-type"}),
+		handlers.AllowedHeaders([]string{
+			"X-Requested-With",
+			"Content-Type",
+			"Authorization",
+		}),
+		handlers.AllowedMethods([]string{
+			"GET",
+			"POST",
+			"PUT",
+			"HEAD",
+			"OPTIONS",
+		}),
 		handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowCredentials(),
 	)
