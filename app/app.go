@@ -91,6 +91,15 @@ func NewApp(cfg *Config) (*App, error) {
 		http.FileServer(rice.MustFindBox("../static").HTTPBox()),
 	)
 	r.PathPrefix("/static/").Handler(fsHandler).Methods("GET")
+
+	cors := handlers.CORS(
+		handlers.AllowedHeaders([]string{"Content-Type"}),
+		handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowCredentials(),
+	)
+
+	r.Use(cors)
+
 	a.Router = r
 	return a, nil
 }
@@ -114,7 +123,7 @@ func (a *App) Run() error {
 	}
 	buildFeed(a)
 	go startWatcher(a)
-	return http.Serve(a.Listener, handlers.CORS()(a.Router))
+	return http.Serve(a.Listener, a.Router)
 }
 
 func (a *App) render(name string, w http.ResponseWriter, ctx interface{}) {
