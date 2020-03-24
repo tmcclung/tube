@@ -76,8 +76,8 @@ func NewApp(cfg *Config) (*App, error) {
 
 	// Setup Router
 	r := mux.NewRouter().StrictSlash(true)
-	r.HandleFunc("/", a.indexHandler).Methods("GET")
-	r.HandleFunc("/upload", a.uploadHandler).Methods("GET", "POST")
+	r.HandleFunc("/", a.indexHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/upload", a.uploadHandler).Methods("GET", "OPTIONS", "POST")
 	r.HandleFunc("/v/{id}.mp4", a.videoHandler).Methods("GET")
 	r.HandleFunc("/v/{prefix}/{id}.mp4", a.videoHandler).Methods("GET")
 	r.HandleFunc("/t/{id}", a.thumbHandler).Methods("GET")
@@ -93,7 +93,7 @@ func NewApp(cfg *Config) (*App, error) {
 	r.PathPrefix("/static/").Handler(fsHandler).Methods("GET")
 
 	cors := handlers.CORS(
-		handlers.AllowedHeaders([]string{"Content-Type"}),
+		handlers.AllowedHeaders([]string{"content-type"}),
 		handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowCredentials(),
 	)
