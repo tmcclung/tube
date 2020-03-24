@@ -114,8 +114,10 @@ const labelClicked = (e) => {
 }
 
 const fileSelected = (_file) => {
-    file = _file || videoInput.files[0]
+    const fileObj = _file || videoInput.files[0]
     if (_file) videoInput.value = ''
+
+    if (fileObj) file = fileObj
     if (!file) return
 
     if (file.size > iMaxFilesize) {
