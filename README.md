@@ -22,8 +22,8 @@ Since all of the video info comes from metadata it's also useful to have a metad
 
 ### Screenshots
 
-![screenshot-1](/screenshot-1.png?raw=true "Main Screen and Video Player")
-![screenshot-2](/screenshot-2.png?raw=true "Video Upload Screen")
+![screenshot-1](screenshot-1.png?raw=true "Main Screen and Video Player")
+![screenshot-2](screenshot-2.png?raw=true "Video Upload Screen")
 
 ## Getting Started
 
