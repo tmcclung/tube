@@ -20,6 +20,11 @@ Currently only supports MP4 video files so you may need to re-encode your media 
 
 Since all of the video info comes from metadata it's also useful to have a metadata editor such as [EasyTAG](https://github.com/GNOME/easytag) (which supports attaching images as thumbnails too).
 
+### Screenshots
+
+![screenshot-1](/screenshot-1.png?raw=true "Main Screen and Video Player")
+![screenshot-2](/screenshot-2.png?raw=true "Video Upload Screen")
+
 ## Getting Started
 
 ### From Source
