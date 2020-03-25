@@ -6,7 +6,6 @@ import (
 	"log"
 	"path"
 	"path/filepath"
-	"sort"
 	"strings"
 	"sync"
 )
@@ -117,6 +116,5 @@ func (lib *Library) Playlist() Playlist {
 		pl[i] = v
 		i++
 	}
-	sort.Sort(pl)
 	return pl
 }

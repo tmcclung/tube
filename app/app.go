@@ -162,7 +162,7 @@ func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/")
 	pl := a.Library.Playlist()
 	if len(pl) > 0 {
-		http.Redirect(w, r, "/v/"+pl[0].ID, 302)
+		http.Redirect(w, r, fmt.Sprintf("/v/%s?%s", pl[0].ID, r.URL.RawQuery), 302)
 	} else {
 		ctx := &struct {
 			Playing  *media.Video
@@ -310,6 +310,13 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 			log.Warn(err)
 		}
 		video.Views = views
+	}
+
+	if r.URL.Query().Get("trending") != "" {
+		log.Info("sorting by trending")
+		media.By(media.SortByViews).Sort(playlist)
+	} else {
+		media.By(media.SortByTimestamp).Sort(playlist)
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
