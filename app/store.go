@@ -3,6 +3,9 @@ package app
 // Store ...
 type Store interface {
 	Close() error
-	GetViews(collection, id string) (int64, error)
-	IncView(collection, id string) error
+	Migrate(collection, id string) error
+	GetViews_(collection, id string) (int64, error)
+	IncView_(collection, id string) error
+	GetViews(id string) (int64, error)
+	IncViews(id string) error
 }

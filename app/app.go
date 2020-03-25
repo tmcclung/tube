@@ -292,13 +292,25 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views, err := a.Store.GetViews(prefix, id)
+	views, err := a.Store.GetViews(id)
 	if err != nil {
-		err := fmt.Errorf("error retrieving views for %s %s: %w", prefix, id, err)
+		err := fmt.Errorf("error retrieving views for %s: %w", id, err)
 		log.Warn(err)
 	}
 
 	playing.Views = views
+
+	playlist := a.Library.Playlist()
+
+	// TODO: Optimize this? Bitcask has no concept of MultiGet / MGET
+	for _, video := range playlist {
+		views, err := a.Store.GetViews(video.ID)
+		if err != nil {
+			err := fmt.Errorf("error retrieving views for %s: %w", video.ID, err)
+			log.Warn(err)
+		}
+		video.Views = views
+	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	ctx := &struct {
@@ -306,7 +318,7 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 		Playlist media.Playlist
 	}{
 		Playing:  playing,
-		Playlist: a.Library.Playlist(),
+		Playlist: playlist,
 	}
 	a.render("index", w, ctx)
 }
@@ -325,8 +337,13 @@ func (a *App) videoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := a.Store.IncView(prefix, id); err != nil {
-		err := fmt.Errorf("error updating view for %s %s: %w", prefix, id, err)
+	if err := a.Store.Migrate(prefix, id); err != nil {
+		err := fmt.Errorf("error migrating store data: %w", err)
+		log.Warn(err)
+	}
+
+	if err := a.Store.IncViews(id); err != nil {
+		err := fmt.Errorf("error updating view for %s: %w", id, err)
 		log.Warn(err)
 	}
 
