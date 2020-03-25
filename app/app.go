@@ -12,6 +12,7 @@ import (
 	"path"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/fsnotify/fsnotify"
@@ -312,18 +313,24 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 		video.Views = views
 	}
 
-	if r.URL.Query().Get("trending") != "" {
-		log.Info("sorting by trending")
+	sort := strings.ToLower(r.URL.Query().Get("sort"))
+	switch sort {
+	case "views":
 		media.By(media.SortByViews).Sort(playlist)
-	} else {
+	case "timestamp":
 		media.By(media.SortByTimestamp).Sort(playlist)
+	default:
+		// By default the playlist is sorted by Timestamp
+		log.Warnf("invalid sort critiera: %s", sort)
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	ctx := &struct {
+		Sort     string
 		Playing  *media.Video
 		Playlist media.Playlist
 	}{
+		Sort:     sort,
 		Playing:  playing,
 		Playlist: playlist,
 	}

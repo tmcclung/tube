@@ -11,6 +11,12 @@
   {{ end }}
 </div>
 <div id="playlist">
+  <div class="nav">
+    <ul>
+      <li><a {{ if eq $.Sort "views" }}class="active"{{ end }}href="?sort=views">Trending</a></li>
+      <li><a {{ if eq $.Sort "timestamp" }}class="active"{{ end }}href="?sort=timestamp">Recent</a></li>
+    </ul>
+  </div>
   {{ range $m := .Playlist }}
       {{ if eq $m.ID $playing.ID }}
         <a href="/v/{{ $m.ID }}" class="playing">
