@@ -16,10 +16,6 @@ MP4 H.265 AAC, multiple collections and RSS feed.
 - Automatically generates RSS feed (at `/feed.xml`)
 - Clean, simple, familiar UI
 
-Currently only supports MP4 video files so you may need to re-encode your media to MP4 using something like [ffmpeg](https://ffmpeg.org/).
-
-Since all of the video info comes from metadata it's also useful to have a metadata editor such as [EasyTAG](https://github.com/GNOME/easytag) (which supports attaching images as thumbnails too).
-
 ### Screenshots
 
 ![screenshot-1](screenshot-1.png?raw=true "Main Screen and Video Player")
