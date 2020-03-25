@@ -95,8 +95,11 @@ main {
     display: inline-block;
     margin-left: 10px;
     width: 290px;
+    height: 543px;
     background: #282a2e;
     box-shadow: 0 3px 7px 0 rgba(0, 0, 0, 0.2);
+    overflow-x: hidden;
+    overflow-x: auto;
 }
 
 #playlist > a {
