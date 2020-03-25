@@ -29,6 +29,7 @@ import (
 type App struct {
 	Config    *Config
 	Library   *media.Library
+	Store     Store
 	Watcher   *fsnotify.Watcher
 	Templates *templateStore
 	Feed      []byte
@@ -46,6 +47,13 @@ func NewApp(cfg *Config) (*App, error) {
 	}
 	// Setup Library
 	a.Library = media.NewLibrary()
+	// Setup Store
+	store, err := NewBitcaskStore(cfg.Server.StorePath)
+	if err != nil {
+		err := fmt.Errorf("error opening store %s: %w", cfg.Server.StorePath, err)
+		return nil, err
+	}
+	a.Store = store
 	// Setup Watcher
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -283,6 +291,15 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 		a.render("upload", w, ctx)
 		return
 	}
+
+	views, err := a.Store.GetViews(prefix, id)
+	if err != nil {
+		err := fmt.Errorf("error retrieving views for %s %s: %w", prefix, id, err)
+		log.Warn(err)
+	}
+
+	playing.Views = views
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	ctx := &struct {
 		Playing  *media.Video
@@ -307,6 +324,12 @@ func (a *App) videoHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
+
+	if err := a.Store.IncView(prefix, id); err != nil {
+		err := fmt.Errorf("error updating view for %s %s: %w", prefix, id, err)
+		log.Warn(err)
+	}
+
 	title := m.Title
 	disposition := "attachment; filename=\"" + title + ".mp4\""
 	w.Header().Set("Content-Disposition", disposition)

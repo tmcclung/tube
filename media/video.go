@@ -27,6 +27,8 @@ type Video struct {
 	Size        int64
 	Path        string
 	Timestamp   time.Time
+
+	Views int64
 }
 
 // ParseVideo parses a video file's metadata and returns a Video.

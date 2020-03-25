@@ -23,6 +23,7 @@ type PathConfig struct {
 type ServerConfig struct {
 	Host       string `json:"host"`
 	Port       int    `json:"port"`
+	StorePath  string `json:"store_path"`
 	UploadPath string `json:"upload_path"`
 }
 

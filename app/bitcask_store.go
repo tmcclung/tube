@@ -1,0 +1,66 @@
+package app
+
+import (
+	"encoding/binary"
+	"fmt"
+
+	log "github.com/sirupsen/logrus"
+
+	"github.com/prologic/bitcask"
+)
+
+// BitcaskStore ...
+type BitcaskStore struct {
+	db *bitcask.Bitcask
+}
+
+// NewBitcaskStore ...
+func NewBitcaskStore(path string, options ...bitcask.Option) (Store, error) {
+	db, err := bitcask.Open(path, options...)
+	if err != nil {
+		return nil, err
+	}
+	return &BitcaskStore{db: db}, nil
+}
+
+// Close ...
+func (s *BitcaskStore) Close() error {
+	return s.db.Close()
+}
+
+// GetViews ...
+func (s *BitcaskStore) GetViews(collection, id string) (int64, error) {
+	var views uint64
+	rawViews, err := s.db.Get([]byte(fmt.Sprintf("/views/%s/%s", collection, id)))
+	if err != nil {
+		if err != bitcask.ErrKeyNotFound {
+			err := fmt.Errorf("error getting views for %s %s: %w", collection, id, err)
+			log.Error(err)
+			return 0, err
+		}
+	} else {
+		views = binary.BigEndian.Uint64(rawViews)
+	}
+
+	return int64(views), nil
+}
+
+// IncView ...
+func (s *BitcaskStore) IncView(collection, id string) error {
+	views, err := s.GetViews(collection, id)
+	if err != nil {
+		err := fmt.Errorf("error getting existing views for %s %s: %w", collection, id, err)
+		return err
+	}
+
+	buf := make([]byte, 8)
+	views++
+	binary.BigEndian.PutUint64(buf, uint64(views))
+	err = s.db.Put([]byte(fmt.Sprintf("/views/%s/%s", collection, id)), buf)
+	if err != nil {
+		err := fmt.Errorf("error storing updated views for %s %s: %w", collection, id, err)
+		return err
+	}
+
+	return nil
+}
