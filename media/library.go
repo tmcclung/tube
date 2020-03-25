@@ -116,5 +116,6 @@ func (lib *Library) Playlist() Playlist {
 		pl[i] = v
 		i++
 	}
+	By(SortByTimestamp).Sort(pl)
 	return pl
 }
