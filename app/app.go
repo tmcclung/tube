@@ -166,9 +166,11 @@ func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, fmt.Sprintf("/v/%s?%s", pl[0].ID, r.URL.RawQuery), 302)
 	} else {
 		ctx := &struct {
+			Sort     string
 			Playing  *media.Video
 			Playlist media.Playlist
 		}{
+			Sort:     "",
 			Playing:  &media.Video{ID: ""},
 			Playlist: a.Library.Playlist(),
 		}

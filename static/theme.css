@@ -462,3 +462,31 @@ label span input {
   }
   */
 }
+
+footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: #1e1e1e;
+  color: white;
+  text-align: center;
+}
+
+footer p {
+  font-size: 8px;
+}
+
+footer p a {
+  color: #fff;
+}
+
+footer p a {
+  text-decoration: underline;
+  color: #fff;
+  transition: .3s background-color;
+}
+
+footer p a:hover {
+  background-color: #005f5f;
+}
