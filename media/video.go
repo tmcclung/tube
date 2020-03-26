@@ -9,9 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/apex/log"
 	"github.com/dhowden/tag"
-
 	"github.com/wybiral/tube/utils"
 )
 
@@ -80,21 +78,16 @@ func ParseVideo(p *Path, name string) (*Video, error) {
 	if pic != nil {
 		v.Thumb = pic.Data
 		v.ThumbType = pic.MIMEType
-	} else if utils.CmdExists("mt") {
+	} else {
 		thumbFn := fmt.Sprintf("%s.jpg", strings.TrimSuffix(pth, filepath.Ext(pth)))
-		if !utils.FileExists(thumbFn) {
-			if err := utils.RunCmd(30, "mt", "-b", "-s", "-n", "1", pth); err != nil {
-				err := fmt.Errorf("error generating thumbnail: %w", err)
-				log.Error(err.Error())
+		if utils.FileExists(thumbFn) {
+			data, err := ioutil.ReadFile(fmt.Sprintf("%s.jpg", strings.TrimSuffix(pth, filepath.Ext(pth))))
+			if err != nil {
 				return nil, err
 			}
+			v.Thumb = data
+			v.ThumbType = "image/jpeg"
 		}
-		data, err := ioutil.ReadFile(fmt.Sprintf("%s.jpg", strings.TrimSuffix(pth, filepath.Ext(pth))))
-		if err != nil {
-			return nil, err
-		}
-		v.Thumb = data
-		v.ThumbType = "image/jpeg"
 	}
 
 	return v, nil

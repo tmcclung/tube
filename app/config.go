@@ -7,10 +7,11 @@ import (
 
 // Config settings for main App.
 type Config struct {
-	Library    []*PathConfig     `json:"library"`
-	Server     *ServerConfig     `json:"server"`
-	Transcoder *TranscoderConfig `json:"transcoder"`
-	Feed       *FeedConfig       `json:"feed"`
+	Library     []*PathConfig      `json:"library"`
+	Server      *ServerConfig      `json:"server"`
+	Thumbnailer *ThumbnailerConfig `json:"thumbnailer"`
+	Transcoder  *TranscoderConfig  `json:"transcoder"`
+	Feed        *FeedConfig        `json:"feed"`
 }
 
 // PathConfig settings for media library path.
@@ -25,6 +26,11 @@ type ServerConfig struct {
 	Port       int    `json:"port"`
 	StorePath  string `json:"store_path"`
 	UploadPath string `json:"upload_path"`
+}
+
+// ThumbnailerConfig settings for Transcoder
+type ThumbnailerConfig struct {
+	Timeout int `json:"timeout"`
 }
 
 // TranscoderConfig settings for Transcoder

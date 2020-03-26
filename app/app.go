@@ -241,6 +241,8 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 			a.Library.Paths[collection].Path,
 			fmt.Sprintf("%s.mp4", shortuuid.New()),
 		)
+		thumbFn1 := fmt.Sprintf("%s.jpg", strings.TrimSuffix(tf.Name(), filepath.Ext(tf.Name())))
+		thumbFn2 := fmt.Sprintf("%s.jpg", strings.TrimSuffix(vf, filepath.Ext(vf)))
 
 		// TODO: Use a proper Job Queue and make this async
 		if err := utils.RunCmd(
@@ -255,6 +257,27 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 			tf.Name(),
 		); err != nil {
 			err := fmt.Errorf("error transcoding video: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err := utils.RunCmd(
+			a.Config.Thumbnailer.Timeout,
+			"mt",
+			"-b",
+			"-s",
+			"-n", "1",
+			tf.Name(),
+		); err != nil {
+			err := fmt.Errorf("error generating thumbnail: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err := os.Rename(thumbFn1, thumbFn2); err != nil {
+			err := fmt.Errorf("error renaming generated thumbnail: %w", err)
 			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

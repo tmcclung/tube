@@ -11,8 +11,11 @@
         "store_path": "tube.db",
         "upload_path": "uploads"
     },
+    "thumbnailer": {
+        "timeout": 60
+    },
     "transcoder": {
-        "timeout": 120
+        "timeout": 300
     },
     "feed": {
         "external_url": "",
