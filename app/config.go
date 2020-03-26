@@ -65,6 +65,9 @@ func DefaultConfig() *Config {
 			Port:       0,
 			UploadPath: "uploads",
 		},
+		Thumbnailer: &ThumbnailerConfig{
+			Timeout: 30,
+		},
 		Transcoder: &TranscoderConfig{
 			Timeout: 60,
 		},
