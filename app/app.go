@@ -342,7 +342,7 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 	switch sort {
 	case "views":
 		media.By(media.SortByViews).Sort(playlist)
-	case "timestamp":
+	case "", "timestamp":
 		media.By(media.SortByTimestamp).Sort(playlist)
 	default:
 		// By default the playlist is sorted by Timestamp
