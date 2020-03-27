@@ -12,6 +12,8 @@ let file = null
 
 const uploadForm = document.getElementById('upload-form')
 const videoInput = document.getElementById('video-input')
+const videoTitle = document.getElementById('video-title')
+const videoDescription = document.getElementById('video-description')
 const uploadMessageLabel = document.getElementById('upload-message')
 const uploadFileContainer = document.getElementById('upload-file')
 const uploadFilenameLabel = document.getElementById('upload-filename')
@@ -161,6 +163,8 @@ const startUploading = () => {
 
     const formData = new FormData()
     formData.append('video_file', file)
+    formData.append('video_title', videoTitle.value)
+    formData.append('video_description', videoDescription.value)
     const xhr = new XMLHttpRequest()
 
     xhr.upload.addEventListener('progress', uploadProgress, false)

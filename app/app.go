@@ -209,6 +209,9 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		defer file.Close()
 
+		title := r.FormValue("video_title")
+		description := r.FormValue("video_description")
+
 		// TODO: Make collection user selectable from drop-down in Form
 		// XXX: Assume we can put uploaded videos into the first collection (sorted) we find
 		keys := make([]string, 0, len(a.Library.Paths))
@@ -266,6 +269,8 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 			"-acodec", "aac",
 			"-strict", "-2",
 			"-loglevel", "quiet",
+			"-metadata", fmt.Sprintf("title=%s", title),
+			"-metadata", fmt.Sprintf("comment=%s", description),
 			tf.Name(),
 		); err != nil {
 			err := fmt.Errorf("error transcoding video: %w", err)
@@ -413,8 +418,8 @@ func (a *App) importHandler(w http.ResponseWriter, r *http.Request) {
 			"-acodec", "aac",
 			"-strict", "-2",
 			"-loglevel", "quiet",
-			"-metadata", fmt.Sprintf("title=\"%s\"", vid.Title),
-			"-metadata", fmt.Sprintf("description=\"%s\"", vid.Description),
+			"-metadata", fmt.Sprintf("title=%s", vid.Title),
+			"-metadata", fmt.Sprintf("comment=%s", vid.Description),
 			tf.Name(),
 		); err != nil {
 			err := fmt.Errorf("error transcoding video: %w", err)
