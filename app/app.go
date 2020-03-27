@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	rice "github.com/GeertJohan/go.rice"
+	"github.com/dustin/go-humanize"
 	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -74,17 +75,21 @@ func NewApp(cfg *Config) (*App, error) {
 
 	a.Templates = newTemplateStore("base")
 
-	indexTemplate := template.New("index")
+	templateFuncs := map[string]interface{}{
+		"bytes": func(size int64) string { return humanize.Bytes(uint64(size)) },
+	}
+
+	indexTemplate := template.New("index").Funcs(templateFuncs)
 	template.Must(indexTemplate.Parse(box.MustString("index.html")))
 	template.Must(indexTemplate.Parse(box.MustString("base.html")))
 	a.Templates.Add("index", indexTemplate)
 
-	uploadTemplate := template.New("upload")
+	uploadTemplate := template.New("upload").Funcs(templateFuncs)
 	template.Must(uploadTemplate.Parse(box.MustString("upload.html")))
 	template.Must(uploadTemplate.Parse(box.MustString("base.html")))
 	a.Templates.Add("upload", uploadTemplate)
 
-	importTemplate := template.New("import")
+	importTemplate := template.New("import").Funcs(templateFuncs)
 	template.Must(importTemplate.Parse(box.MustString("import.html")))
 	template.Must(importTemplate.Parse(box.MustString("base.html")))
 	a.Templates.Add("import", importTemplate)

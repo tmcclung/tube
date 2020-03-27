@@ -9,7 +9,7 @@ require (
 	github.com/dhowden/tag v0.0.0-20190519100835-db0c67e351b1
 	github.com/disintegration/gift v1.2.1 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
-	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/dustin/go-humanize v1.0.0
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gorilla/feeds v1.1.1
 	github.com/gorilla/handlers v1.4.2
