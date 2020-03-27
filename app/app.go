@@ -19,6 +19,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/renstrom/shortuuid"
+	"github.com/rylio/ytdl"
 	log "github.com/sirupsen/logrus"
 	"github.com/wybiral/tube/media"
 	"github.com/wybiral/tube/utils"
@@ -325,96 +326,112 @@ func (a *App) importHandler(w http.ResponseWriter, r *http.Request) {
 			keys = append(keys, k)
 		}
 		sort.Strings(keys)
-		//collection := keys[0]
+		collection := keys[0]
 
-		/*
-			uf, err := ioutil.TempFile(
-				a.Config.Server.UploadPath,
-				fmt.Sprintf("tube-import-*%s.mp4",
-			)
-			if err != nil {
-				err := fmt.Errorf("error creating temporary file for importing: %w", err)
-				log.Error(err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			defer os.Remove(uf.Name())
+		vid, err := ytdl.GetVideoInfo(url)
+		if err != nil {
+			err := fmt.Errorf("error retriving video info for %s: %w", url, err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-				_, err = io.Copy(uf, file)
-				if err != nil {
-					err := fmt.Errorf("error writing file: %w", err)
-					log.Error(err)
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
+		uf, err := ioutil.TempFile(
+			a.Config.Server.UploadPath,
+			fmt.Sprintf("tube-import-*.mp4"),
+		)
+		if err != nil {
+			err := fmt.Errorf("error creating temporary file for importing: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer os.Remove(uf.Name())
 
-				tf, err := ioutil.TempFile(
-					a.Config.Server.UploadPath,
-					fmt.Sprintf("tube-transcode-*.mp4"),
-				)
-				if err != nil {
-					err := fmt.Errorf("error creating temporary file for transcoding: %w", err)
-					log.Error(err)
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
+		err = vid.Download(vid.Formats[0], uf)
+		if err != nil {
+			err := fmt.Errorf("error downloading video %s: %w", url, err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-				vf := filepath.Join(
-					a.Library.Paths[collection].Path,
-					fmt.Sprintf("%s.mp4", shortuuid.New()),
-				)
-				thumbFn1 := fmt.Sprintf("%s.jpg", strings.TrimSuffix(tf.Name(), filepath.Ext(tf.Name())))
-				thumbFn2 := fmt.Sprintf("%s.jpg", strings.TrimSuffix(vf, filepath.Ext(vf)))
+		tf, err := ioutil.TempFile(
+			a.Config.Server.UploadPath,
+			fmt.Sprintf("tube-transcode-*.mp4"),
+		)
+		if err != nil {
+			err := fmt.Errorf("error creating temporary file for transcoding: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-				// TODO: Use a proper Job Queue and make this async
-				if err := utils.RunCmd(
-					a.Config.Transcoder.Timeout,
-					"ffmpeg",
-					"-y",
-					"-i", uf.Name(),
-					"-vcodec", "h264",
-					"-acodec", "aac",
-					"-strict", "-2",
-					"-loglevel", "quiet",
-					tf.Name(),
-				); err != nil {
-					err := fmt.Errorf("error transcoding video: %w", err)
-					log.Error(err)
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
+		vf := filepath.Join(
+			a.Library.Paths[collection].Path,
+			fmt.Sprintf("%s.mp4", shortuuid.New()),
+		)
+		thumbFn1 := fmt.Sprintf("%s.jpg", strings.TrimSuffix(tf.Name(), filepath.Ext(tf.Name())))
+		thumbFn2 := fmt.Sprintf("%s.jpg", strings.TrimSuffix(vf, filepath.Ext(vf)))
 
-				if err := utils.RunCmd(
-					a.Config.Thumbnailer.Timeout,
-					"mt",
-					"-b",
-					"-s",
-					"-n", "1",
-					tf.Name(),
-				); err != nil {
-					err := fmt.Errorf("error generating thumbnail: %w", err)
-					log.Error(err)
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
+		thumbURL := vid.GetThumbnailURL(ytdl.ThumbnailQualityHigh)
+		res, err := http.Get(thumbURL.String())
+		if err != nil {
+			err := fmt.Errorf("error downloading thumbnail: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		thumbData, err := ioutil.ReadAll(res.Body)
+		res.Body.Close()
+		if err != nil {
+			err := fmt.Errorf("error reading thumbnail data: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-				if err := os.Rename(thumbFn1, thumbFn2); err != nil {
-					err := fmt.Errorf("error renaming generated thumbnail: %w", err)
-					log.Error(err)
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
+		if err := ioutil.WriteFile(thumbFn1, thumbData, 0644); err != nil {
+			err := fmt.Errorf("error writing thumbnail data: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-				if err := os.Rename(tf.Name(), vf); err != nil {
-					err := fmt.Errorf("error renaming transcoded video: %w", err)
-					log.Error(err)
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				fmt.Fprintf(w, "Video successfully uploaded!")
-		*/
+		// TODO: Use a proper Job Queue and make this async
+		if err := utils.RunCmd(
+			a.Config.Transcoder.Timeout,
+			"ffmpeg",
+			"-y",
+			"-i", uf.Name(),
+			"-vcodec", "h264",
+			"-acodec", "aac",
+			"-strict", "-2",
+			"-loglevel", "quiet",
+			"-metadata", fmt.Sprintf("title=\"%s\"", vid.Title),
+			"-metadata", fmt.Sprintf("description=\"%s\"", vid.Description),
+			tf.Name(),
+		); err != nil {
+			err := fmt.Errorf("error transcoding video: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-		fmt.Fprintf(w, "Not Implemented (yet)")
+		if err := os.Rename(thumbFn1, thumbFn2); err != nil {
+			err := fmt.Errorf("error renaming generated thumbnail: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err := os.Rename(tf.Name(), vf); err != nil {
+			err := fmt.Errorf("error renaming transcoded video: %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprintf(w, "Video successfully imported!")
 	} else {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}

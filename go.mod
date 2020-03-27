@@ -19,6 +19,7 @@ require (
 	github.com/mutschler/mt v0.0.0-20200120124658-d48aed259ff6 // indirect
 	github.com/prologic/bitcask v0.3.5
 	github.com/renstrom/shortuuid v3.0.0+incompatible
+	github.com/rylio/ytdl v0.6.2
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.6.2 // indirect
@@ -27,5 +28,5 @@ require (
 	gitlab.com/opennota/screengen v0.0.0-20191122132138-74a8d677a1a5 // indirect
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7
-	golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa
+	golang.org/x/sys v0.0.0-20191104094858-e8c54fb511f6
 )
