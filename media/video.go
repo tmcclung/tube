@@ -61,7 +61,7 @@ func ParseVideo(p *Path, name string) (*Video, error) {
 	title := m.Title()
 	// Default title is filename
 	if title == "" {
-		title = name
+		title = strings.TrimSuffix(name, filepath.Ext(name))
 	}
 	v := &Video{
 		ID:          id,
