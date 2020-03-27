@@ -83,10 +83,16 @@ func NewApp(cfg *Config) (*App, error) {
 	template.Must(uploadTemplate.Parse(box.MustString("base.html")))
 	a.Templates.Add("upload", uploadTemplate)
 
+	importTemplate := template.New("import")
+	template.Must(importTemplate.Parse(box.MustString("import.html")))
+	template.Must(importTemplate.Parse(box.MustString("base.html")))
+	a.Templates.Add("import", importTemplate)
+
 	// Setup Router
 	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/", a.indexHandler).Methods("GET", "OPTIONS")
 	r.HandleFunc("/upload", a.uploadHandler).Methods("GET", "OPTIONS", "POST")
+	r.HandleFunc("/import", a.importHandler).Methods("GET", "OPTIONS", "POST")
 	r.HandleFunc("/v/{id}.mp4", a.videoHandler).Methods("GET")
 	r.HandleFunc("/v/{prefix}/{id}.mp4", a.videoHandler).Methods("GET")
 	r.HandleFunc("/t/{id}", a.thumbHandler).Methods("GET")
@@ -291,6 +297,124 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		fmt.Fprintf(w, "Video successfully uploaded!")
+	} else {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+// HTTP handler for /import
+func (a *App) importHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		ctx := &struct{}{}
+		a.render("import", w, ctx)
+	} else if r.Method == "POST" {
+		r.ParseMultipartForm(1024)
+
+		url := r.FormValue("url")
+		if url == "" {
+			err := fmt.Errorf("error, no url supplied")
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// TODO: Make collection user selectable from drop-down in Form
+		// XXX: Assume we can put uploaded videos into the first collection (sorted) we find
+		keys := make([]string, 0, len(a.Library.Paths))
+		for k := range a.Library.Paths {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		//collection := keys[0]
+
+		/*
+			uf, err := ioutil.TempFile(
+				a.Config.Server.UploadPath,
+				fmt.Sprintf("tube-import-*%s.mp4",
+			)
+			if err != nil {
+				err := fmt.Errorf("error creating temporary file for importing: %w", err)
+				log.Error(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			defer os.Remove(uf.Name())
+
+				_, err = io.Copy(uf, file)
+				if err != nil {
+					err := fmt.Errorf("error writing file: %w", err)
+					log.Error(err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				tf, err := ioutil.TempFile(
+					a.Config.Server.UploadPath,
+					fmt.Sprintf("tube-transcode-*.mp4"),
+				)
+				if err != nil {
+					err := fmt.Errorf("error creating temporary file for transcoding: %w", err)
+					log.Error(err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				vf := filepath.Join(
+					a.Library.Paths[collection].Path,
+					fmt.Sprintf("%s.mp4", shortuuid.New()),
+				)
+				thumbFn1 := fmt.Sprintf("%s.jpg", strings.TrimSuffix(tf.Name(), filepath.Ext(tf.Name())))
+				thumbFn2 := fmt.Sprintf("%s.jpg", strings.TrimSuffix(vf, filepath.Ext(vf)))
+
+				// TODO: Use a proper Job Queue and make this async
+				if err := utils.RunCmd(
+					a.Config.Transcoder.Timeout,
+					"ffmpeg",
+					"-y",
+					"-i", uf.Name(),
+					"-vcodec", "h264",
+					"-acodec", "aac",
+					"-strict", "-2",
+					"-loglevel", "quiet",
+					tf.Name(),
+				); err != nil {
+					err := fmt.Errorf("error transcoding video: %w", err)
+					log.Error(err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				if err := utils.RunCmd(
+					a.Config.Thumbnailer.Timeout,
+					"mt",
+					"-b",
+					"-s",
+					"-n", "1",
+					tf.Name(),
+				); err != nil {
+					err := fmt.Errorf("error generating thumbnail: %w", err)
+					log.Error(err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				if err := os.Rename(thumbFn1, thumbFn2); err != nil {
+					err := fmt.Errorf("error renaming generated thumbnail: %w", err)
+					log.Error(err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				if err := os.Rename(tf.Name(), vf); err != nil {
+					err := fmt.Errorf("error renaming transcoded video: %w", err)
+					log.Error(err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				fmt.Fprintf(w, "Video successfully uploaded!")
+		*/
+
+		fmt.Fprintf(w, "Not Implemented (yet)")
 	} else {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
