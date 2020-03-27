@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 }, false)
 
 const labelClicked = (e) => {
-    if (uploadInProgress === true) {
+    if (uploadInProgress === true || file != null) {
         e.preventDefault()
         return false
     }
