@@ -17,7 +17,7 @@
       <source src="/v/{{ $playing.ID }}.mp4?quality={{ $.Quality }}" type="video/mp4" />
     </video>
     <h1>{{ $playing.Title }}</h1>
-    <h2>{{ $playing.Views }} views • {{ $playing.Modified }}<br />{{ $playing.Size | bytes }}</h2>
+    <h2>{{ $playing.Views }} views • {{ $playing.Modified }} • {{ $playing.Size | bytes }}</h2>
     <p>{{ $playing.Description }}</p>
   {{ else }}
     <video id="video" controls></video>
@@ -39,7 +39,7 @@
     <img src="/t/{{ $m.ID }}">
     <div>
       <h1>{{ $m.Title }}</h1>
-      <h2>{{ $m.Views }} views • {{ $m.Modified }}<br />{{ $m.Size | bytes }}</h2>
+      <h2>{{ $m.Views }} views • {{ $m.Modified }}</h2>
     </div>
     </a>
   {{ end }}
