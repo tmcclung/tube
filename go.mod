@@ -20,7 +20,8 @@ require (
 	github.com/mutschler/mt v0.0.0-20200120124658-d48aed259ff6 // indirect
 	github.com/prologic/bitcask v0.3.5
 	github.com/renstrom/shortuuid v3.0.0+incompatible
-	github.com/rylio/ytdl v0.6.2
+	github.com/rs/zerolog v1.18.0 // indirect
+	github.com/rylio/ytdl v0.6.3-0.20200220142242-f3a87da86fb8
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.6.2 // indirect

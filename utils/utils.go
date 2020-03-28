@@ -3,10 +3,31 @@ package utils
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"time"
 )
+
+func Download(url, filename string) error {
+	res, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	if err := ioutil.WriteFile(filename, data, 0644); err != nil {
+		return err
+	}
+
+	return nil
+}
 
 // FileExists ...
 func FileExists(name string) bool {

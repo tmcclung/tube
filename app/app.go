@@ -20,8 +20,8 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/renstrom/shortuuid"
-	"github.com/rylio/ytdl"
 	log "github.com/sirupsen/logrus"
+	"github.com/wybiral/tube/importers"
 	"github.com/wybiral/tube/media"
 	"github.com/wybiral/tube/utils"
 )
@@ -339,7 +339,15 @@ func (a *App) importHandler(w http.ResponseWriter, r *http.Request) {
 		sort.Strings(keys)
 		collection := keys[0]
 
-		vid, err := ytdl.GetVideoInfo(url)
+		videoImporter, err := importers.NewImporter(url)
+		if err != nil {
+			err := fmt.Errorf("error creating video importer for %s: %w", url, err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		videoInfo, err := videoImporter.GetVideoInfo(url)
 		if err != nil {
 			err := fmt.Errorf("error retriving video info for %s: %w", url, err)
 			log.Error(err)
@@ -359,8 +367,7 @@ func (a *App) importHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		defer os.Remove(uf.Name())
 
-		err = vid.Download(vid.Formats[0], uf)
-		if err != nil {
+		if err := utils.Download(videoInfo.VideoURL, uf.Name()); err != nil {
 			err := fmt.Errorf("error downloading video %s: %w", url, err)
 			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -385,25 +392,8 @@ func (a *App) importHandler(w http.ResponseWriter, r *http.Request) {
 		thumbFn1 := fmt.Sprintf("%s.jpg", strings.TrimSuffix(tf.Name(), filepath.Ext(tf.Name())))
 		thumbFn2 := fmt.Sprintf("%s.jpg", strings.TrimSuffix(vf, filepath.Ext(vf)))
 
-		thumbURL := vid.GetThumbnailURL(ytdl.ThumbnailQualityHigh)
-		res, err := http.Get(thumbURL.String())
-		if err != nil {
+		if err := utils.Download(videoInfo.ThumbnailURL, thumbFn1); err != nil {
 			err := fmt.Errorf("error downloading thumbnail: %w", err)
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		thumbData, err := ioutil.ReadAll(res.Body)
-		res.Body.Close()
-		if err != nil {
-			err := fmt.Errorf("error reading thumbnail data: %w", err)
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if err := ioutil.WriteFile(thumbFn1, thumbData, 0644); err != nil {
-			err := fmt.Errorf("error writing thumbnail data: %w", err)
 			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -419,8 +409,8 @@ func (a *App) importHandler(w http.ResponseWriter, r *http.Request) {
 			"-acodec", "aac",
 			"-strict", "-2",
 			"-loglevel", "quiet",
-			"-metadata", fmt.Sprintf("title=%s", vid.Title),
-			"-metadata", fmt.Sprintf("comment=%s", vid.Description),
+			"-metadata", fmt.Sprintf("title=%s", videoInfo.Title),
+			"-metadata", fmt.Sprintf("comment=%s", videoInfo.Description),
 			tf.Name(),
 		); err != nil {
 			err := fmt.Errorf("error transcoding video: %w", err)
