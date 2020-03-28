@@ -61,7 +61,7 @@ A Production Deployment can be found at https://tube.mills.io/ -- This is run
 and managed via a Docker Swarm cluster with a Docker-Compose / Stack very
 similiar to the one you can find in the repo: [docker-compose.yml](docker-compose.yml)
 
-Beyond this a "PRoduction Deployment" is out-of-scope at this time for the
+Beyond this a "Production Deployment" is out-of-scope at this time for the
 documentation being provided here. Please don't hesitate to file an
 [Issue](https://github.com/prologic/tube/issues/new) however for ask for help
 or advice or contact the author directly!
