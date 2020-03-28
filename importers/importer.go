@@ -25,7 +25,7 @@ type Importer interface {
 func NewImporter(url string) (Importer, error) {
 	if strings.Contains(url, "youtube.com") || strings.HasPrefix(url, "youtube:") {
 		return &YoutubeImporter{}, nil
-	} else if strings.Contains(url, "youtube.com") || strings.HasPrefix(url, "youtube:") {
+	} else if strings.Contains(url, "vimeo.com") || strings.HasPrefix(url, "vimeo:") {
 		return &VimeoImporter{}, nil
 	} else {
 		return nil, ErrUnsupportedVideoURL

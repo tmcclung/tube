@@ -137,6 +137,12 @@ github.com/plar/go-adaptive-radix-tree v1.0.1/go.mod h1:Ot8d28EII3i7Lv4PSvBlF8ej
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prologic/bitcask v0.3.5 h1:o5PekS/LTRXQvLmY/5oQxIgjdT5bwcxPLsrGmnyo3Yo=
 github.com/prologic/bitcask v0.3.5/go.mod h1:gl5FAhs5GhvmV6tEIQWwk9d/FD9vc8NC8Hs24/zU/4w=
+github.com/prologic/vimeodl v0.0.0-20200328022514-f93b4783a93d h1:z928AMwVg+Zrk4KoA+J47bMp3V9vxRl8t+izSGMA218=
+github.com/prologic/vimeodl v0.0.0-20200328022514-f93b4783a93d/go.mod h1:uG4Pdd9lZNNkvQHFr70+Qi7im3/YYnBOtUCrqyZKwlw=
+github.com/prologic/vimeodl v0.0.0-20200328023734-d27c4c341c4f h1:JXB97k4DcG3NxKEk6+WVUlpJzQvcuqoviHd1OUPky5g=
+github.com/prologic/vimeodl v0.0.0-20200328023734-d27c4c341c4f/go.mod h1:uG4Pdd9lZNNkvQHFr70+Qi7im3/YYnBOtUCrqyZKwlw=
+github.com/prologic/vimeodl v0.0.0-20200328030915-d2b0e6272c23 h1:2iUEG1ZXpjBoq11gFdlWOJStBN/3aW3MlY0V5QONZas=
+github.com/prologic/vimeodl v0.0.0-20200328030915-d2b0e6272c23/go.mod h1:uG4Pdd9lZNNkvQHFr70+Qi7im3/YYnBOtUCrqyZKwlw=
 github.com/prometheus/client_golang v0.9.1/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=
 github.com/prometheus/client_golang v0.9.3/go.mod h1:/TN21ttK/J9q6uSwhBd54HahCDft0ttaMvbicHlPoso=
 github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910/go.mod h1:MbSGuTsp3dbXC40dX6PRTWyKYBIrTGTE9sqQNg2J8bo=

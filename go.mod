@@ -19,6 +19,7 @@ require (
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
 	github.com/mutschler/mt v0.0.0-20200120124658-d48aed259ff6 // indirect
 	github.com/prologic/bitcask v0.3.5
+	github.com/prologic/vimeodl v0.0.0-20200328030915-d2b0e6272c23
 	github.com/renstrom/shortuuid v3.0.0+incompatible
 	github.com/rs/zerolog v1.18.0 // indirect
 	github.com/rylio/ytdl v0.6.3-0.20200220142242-f3a87da86fb8
