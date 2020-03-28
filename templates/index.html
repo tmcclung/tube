@@ -31,17 +31,17 @@
     </ul>
   </div>
   {{ range $m := .Playlist }}
-      {{ if eq $m.ID $playing.ID }}
-        <a href="/v/{{ $m.ID }}" class="playing">
-      {{ else }}
-        <a href="/v/{{ $m.ID }}">
-      {{ end }}
-      <img src="/t/{{ $m.ID }}">
-      <div>
-        <h1>{{ $m.Title }}</h1>
-        <h2>{{ $m.Views }} views • {{ $m.Modified }}<br />{{ $m.Size | bytes }}</h2>
-      </div>
-      </a>
+    {{ if eq $m.ID $playing.ID }}
+      <a href="/v/{{ $m.ID }}?sort={{ $.Sort }}" class="playing">
+    {{ else }}
+      <a href="/v/{{ $m.ID }}?sort={{ $.Sort }}">
+    {{ end }}
+    <img src="/t/{{ $m.ID }}">
+    <div>
+      <h1>{{ $m.Title }}</h1>
+      <h2>{{ $m.Views }} views • {{ $m.Modified }}<br />{{ $m.Size | bytes }}</h2>
+    </div>
+    </a>
   {{ end }}
 </div>
 {{end}}
