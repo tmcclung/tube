@@ -178,12 +178,15 @@ func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, fmt.Sprintf("/v/%s?%s", pl[0].ID, r.URL.RawQuery), 302)
 	} else {
 		sort := strings.ToLower(r.URL.Query().Get("sort"))
+		quality := strings.ToLower(r.URL.Query().Get("quality"))
 		ctx := &struct {
 			Sort     string
+			Quality  string
 			Playing  *media.Video
 			Playlist media.Playlist
 		}{
 			Sort:     sort,
+			Quality:  quality,
 			Playing:  &media.Video{ID: ""},
 			Playlist: a.Library.Playlist(),
 		}
@@ -449,10 +452,16 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/v/%s", id)
 	playing, ok := a.Library.Videos[id]
 	if !ok {
+		sort := strings.ToLower(r.URL.Query().Get("sort"))
+		quality := strings.ToLower(r.URL.Query().Get("quality"))
 		ctx := &struct {
+			Sort     string
+			Quality  string
 			Playing  *media.Video
 			Playlist media.Playlist
 		}{
+			Sort:     sort,
+			Quality:  quality,
 			Playing:  &media.Video{ID: ""},
 			Playlist: a.Library.Playlist(),
 		}
@@ -491,13 +500,23 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 		log.Warnf("invalid sort critiera: %s", sort)
 	}
 
+	quality := strings.ToLower(r.URL.Query().Get("quality"))
+	switch quality {
+	case "", "720p", "480p", "360p", "240p":
+	default:
+		log.WithField("quality", quality).Warn("invalid quality")
+		quality = ""
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	ctx := &struct {
 		Sort     string
+		Quality  string
 		Playing  *media.Video
 		Playlist media.Playlist
 	}{
 		Sort:     sort,
+		Quality:  quality,
 		Playing:  playing,
 		Playlist: playlist,
 	}
@@ -508,14 +527,41 @@ func (a *App) pageHandler(w http.ResponseWriter, r *http.Request) {
 func (a *App) videoHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
+
 	prefix, ok := vars["prefix"]
 	if ok {
 		id = path.Join(prefix, id)
 	}
+
 	log.Printf("/v/%s", id)
+
 	m, ok := a.Library.Videos[id]
 	if !ok {
 		return
+	}
+
+	var videoPath string
+
+	quality := strings.ToLower(r.URL.Query().Get("quality"))
+	switch quality {
+	case "720p", "480p", "360p", "240p":
+		videoPath = fmt.Sprintf(
+			"%s#%s.mp4",
+			strings.TrimSuffix(m.Path, filepath.Ext(m.Path)),
+			quality,
+		)
+		if !utils.FileExists(videoPath) {
+			log.
+				WithField("quality", quality).
+				WithField("videoPath", videoPath).
+				Warn("video with specified quality does not exist (defaulting to default quality)")
+			videoPath = m.Path
+		}
+	case "":
+		videoPath = m.Path
+	default:
+		log.WithField("quality", quality).Warn("invalid quality")
+		videoPath = m.Path
 	}
 
 	if err := a.Store.Migrate(prefix, id); err != nil {
@@ -532,7 +578,7 @@ func (a *App) videoHandler(w http.ResponseWriter, r *http.Request) {
 	disposition := "attachment; filename=\"" + title + ".mp4\""
 	w.Header().Set("Content-Disposition", disposition)
 	w.Header().Set("Content-Type", "video/mp4")
-	http.ServeFile(w, r, m.Path)
+	http.ServeFile(w, r, videoPath)
 }
 
 // HTTP handler for /t/id

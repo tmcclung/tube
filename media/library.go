@@ -50,6 +50,10 @@ func (lib *Library) Import(p *Path) error {
 		return err
 	}
 	for _, info := range files {
+		if strings.ContainsAny(info.Name(), "#") {
+			// ignore resized videos e.g: #240p.mp4
+			continue
+		}
 		err = lib.Add(path.Join(p.Path, info.Name()))
 		if err != nil {
 			// Ignore files that can't be parsed

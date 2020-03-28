@@ -2,7 +2,9 @@
 {{ $playing := .Playing }}
 <div id="player">
   {{ if $playing.ID }}
-    <video id="video" controls preload="metadata" poster="/t/{{ $playing.ID}}" src="/v/{{ $playing.ID }}.mp4" type="video/mp4"></video>
+    <video id="video" controls preload="metadata" poster="/t/{{ $playing.ID}}">
+      <source src="/v/{{ $playing.ID }}.mp4?quality={{ $.Quality }}" type="video/mp4" />
+    </video>
     <h1>{{ $playing.Title }}</h1>
     <h2>{{ $playing.Views }} views • {{ $playing.Modified }}<br />{{ $playing.Size | bytes }}</h2>
     <p>{{ $playing.Description }}</p>

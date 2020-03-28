@@ -2,6 +2,7 @@ package app
 
 import (
 	"path/filepath"
+	"strings"
 	"time"
 
 	fs "github.com/fsnotify/fsnotify"
@@ -29,7 +30,7 @@ func startWatcher(a *App) {
 	for {
 		select {
 		case e := <-a.Watcher.Events:
-			if filepath.Ext(e.Name) != ".mp4" {
+			if strings.ContainsAny(e.Name, "#") || filepath.Ext(e.Name) != ".mp4" {
 				continue
 			}
 			log.Debugf("fsnotify event: %s", e)
