@@ -23,6 +23,27 @@ MP4 H.265 AAC, multiple collections and RSS feed.
 
 ## Getting Started
 
+### Using a Binary
+
+1. Go grab the latest binary from the
+   [Releases](https://github.com/prologic/tube/releases) page for your
+   platform / operating system.
+2. Extract the archive.
+3. Run `./tube`
+
+Open http://127.0.0.1:8000/ in your Browser!
+
+### Using Docker
+
+```#!sh
+$ docker pull prologic/tube
+$ docker run -p 8000:8000 -v /path/to/data:/data
+```
+
+Open http://DOCKER_MACHINE_IP:8000/ in your Browser!
+
+Where `DOCKER_MACHINE_IP` is the IP Address of your Docker Node.
+
 ### From Source
 
 ```#!sh
@@ -34,12 +55,16 @@ $ ./tube
 
 Open http://127.0.0.1:8000/ in your Browser!
 
-### Using Docker
+### A Production Deployment
 
-```#!sh
-$ docker pull prologic/tube
-$ docker run -p 8000:8000 -v /path/to/data:/data
-```
+A Production Deployment can be found at https://tube.mills.io/ -- This is run
+and managed via a Docker Swarm cluster with a Docker-Compose / Stack very
+similiar to the one you can find in the repo: [docker-compose.yml](docker-compose.yml)
+
+Beyond this a "PRoduction Deployment" is out-of-scope at this time for the
+documentation being provided here. Please don't hesitate to file an
+[Issue](https://github.com/prologic/tube/issues/new) however for ask for help
+or advice or contact the author directly!
 
 ## Stargazers over time
 
