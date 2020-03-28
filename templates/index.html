@@ -1,17 +1,17 @@
 {{ define "content" }}
 {{ $playing := .Playing }}
-<div class="topnav" id="myTopnav">
-  <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-    <i class="fa fa-cogs"></i>
-  </a>
-  <a {{ if eq $.Quality "" }}class="active"{{ end }} href="/v/{{ $playing.ID }}">fullHD</a>
-  <a {{ if eq $.Quality "720p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=720p">720p</a>
-  <a {{ if eq $.Quality "480p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=480p">480p</a>
-  <a {{ if eq $.Quality "360p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=360p">360p</a>
-  <a {{ if eq $.Quality "240p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=240p">240p</a>
-</div>
-
 <div id="player">
+  <div class="topnav" id="myTopnav">
+    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+      <i class="fa fa-cogs"></i>
+    </a>
+    <a {{ if eq $.Quality "" }}class="active"{{ end }} href="/v/{{ $playing.ID }}">fullHD</a>
+    <a {{ if eq $.Quality "720p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=720p">720p</a>
+    <a {{ if eq $.Quality "480p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=480p">480p</a>
+    <a {{ if eq $.Quality "360p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=360p">360p</a>
+    <a {{ if eq $.Quality "240p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=240p">240p</a>
+  </div>
+
   {{ if $playing.ID }}
     <video id="video" controls preload="metadata" poster="/t/{{ $playing.ID}}">
       <source src="/v/{{ $playing.ID }}.mp4?quality={{ $.Quality }}" type="video/mp4" />
