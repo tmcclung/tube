@@ -23,13 +23,13 @@ func init() {
 	}
 	file4 := &embedded.EmbeddedFile{
 		Filename:    "index.html",
-		FileModTime: time.Unix(1585341743, 0),
+		FileModTime: time.Unix(1585371597, 0),
 
-		Content: string("{{ define \"content\" }}\r\n{{ $playing := .Playing }}\r\n<div id=\"player\">\r\n  {{ if $playing.ID }}\r\n    <video id=\"video\" controls poster=\"/t/{{ $playing.ID}}\" src=\"/v/{{ $playing.ID }}.mp4\"></video>\r\n    <h1>{{ $playing.Title }}</h1>\r\n    <h2>{{ $playing.Views }} views • {{ $playing.Modified }}<br />{{ $playing.Size | bytes }}</h2>\r\n    <p>{{ $playing.Description }}</p>\r\n  {{ else }}\r\n    <video id=\"video\" controls></video>\r\n  {{ end }}\r\n</div>\r\n<div id=\"playlist\">\r\n  <div class=\"nav\">\r\n    <ul>\r\n      <li><a {{ if or (eq $.Sort \"timestamp\") (eq $.Sort \"\") }}class=\"active\"{{ end }} href=\"?sort=timestamp\">Recent</a></li>\r\n      <li><a {{ if eq $.Sort \"views\" }}class=\"active\"{{ end }} href=\"?sort=views\">Views</a></li>\r\n    </ul>\r\n  </div>\r\n  {{ range $m := .Playlist }}\r\n      {{ if eq $m.ID $playing.ID }}\r\n        <a href=\"/v/{{ $m.ID }}\" class=\"playing\">\r\n      {{ else }}\r\n        <a href=\"/v/{{ $m.ID }}\">\r\n      {{ end }}\r\n      <img src=\"/t/{{ $m.ID }}\">\r\n      <div>\r\n        <h1>{{ $m.Title }}</h1>\r\n        <h2>{{ $m.Views }} views • {{ $m.Modified }}<br />{{ $m.Size | bytes }}</h2>\r\n      </div>\r\n      </a>\r\n  {{ end }}\r\n</div>\r\n{{end}}\r\n"),
+		Content: string("{{ define \"content\" }}\r\n{{ $playing := .Playing }}\r\n<div id=\"player\">\r\n  {{ if $playing.ID }}\r\n    <video id=\"video\" controls preload=\"metadata\" poster=\"/t/{{ $playing.ID}}\" src=\"/v/{{ $playing.ID }}.mp4\" type=\"video/mp4\"></video>\r\n    <h1>{{ $playing.Title }}</h1>\r\n    <h2>{{ $playing.Views }} views • {{ $playing.Modified }}<br />{{ $playing.Size | bytes }}</h2>\r\n    <p>{{ $playing.Description }}</p>\r\n  {{ else }}\r\n    <video id=\"video\" controls></video>\r\n  {{ end }}\r\n</div>\r\n<div id=\"playlist\">\r\n  <div class=\"nav\">\r\n    <ul>\r\n      <li><a {{ if or (eq $.Sort \"timestamp\") (eq $.Sort \"\") }}class=\"active\"{{ end }} href=\"?sort=timestamp\">Recent</a></li>\r\n      <li><a {{ if eq $.Sort \"views\" }}class=\"active\"{{ end }} href=\"?sort=views\">Views</a></li>\r\n    </ul>\r\n  </div>\r\n  {{ range $m := .Playlist }}\r\n      {{ if eq $m.ID $playing.ID }}\r\n        <a href=\"/v/{{ $m.ID }}\" class=\"playing\">\r\n      {{ else }}\r\n        <a href=\"/v/{{ $m.ID }}\">\r\n      {{ end }}\r\n      <img src=\"/t/{{ $m.ID }}\">\r\n      <div>\r\n        <h1>{{ $m.Title }}</h1>\r\n        <h2>{{ $m.Views }} views • {{ $m.Modified }}<br />{{ $m.Size | bytes }}</h2>\r\n      </div>\r\n      </a>\r\n  {{ end }}\r\n</div>\r\n{{end}}\r\n"),
 	}
 	file5 := &embedded.EmbeddedFile{
 		Filename:    "upload.html",
-		FileModTime: time.Unix(1585341743, 0),
+		FileModTime: time.Unix(1585370960, 0),
 
 		Content: string("{{define \"content\"}}\n  <div style=\"text-align: center;\">\n    <label class=\"upload-container\" onclick=\"labelClicked(event)\">\n      <div class=\"upload-wrapper\">\n        <form id=\"upload-form\" class=\"upload-form\" enctype=\"multipart/form-data\" method=\"POST\" action=\"/upload\">\n          <input id=\"video-input\" type=\"file\" accept=\"video/*\" onchange=\"fileSelected()\" style=\"display: none;\"/>\n          <div class=\"upload-box\">\n            <img width=\"100\" src=\"/static/upload-icon.png\"/>\n            <span>Click to browse or drop file here</span>\n          </div>\n          <div class=\"upload-details\">\n            <input id=\"video-title\" type=\"text\" placeholder=\"Optional title\" />\n            <textarea id=\"video-description\" rows=\"2\" placeholder=\"Optional description\"></textarea>\n            <div id=\"upload-file\" class=\"upload-file\">\n              <span id=\"upload-filename\"></span>\n              <img width=\"20\" src=\"/static/close-icon.png\" onclick=\"removeFile(event)\"/>\n            </div>\n            <span id=\"upload-message\" class=\"upload-message\">No file selected</span>\n            <div id=\"upload-button-wrapper\" class=\"upload-button-wrapper\">\n              <button id=\"upload-button\" class=\"upload-button\" onclick=\"startUploading()\" type=\"button\">\n                <span id=\"upload-stopped\">Upload</span>\n                <span id=\"upload-started\" class=\"loader\" style=\"display: none;\"></span>\n              </button>\n            </div>\n            <div id=\"upload-progress-container\" class=\"upload-progress-container\">\n              <div id=\"upload-progress\" class=\"upload-progress\">\n                <span id=\"upload-progress-label\" class=\"upload-progress-label\"></span>\n              </div>\n              <div style=\"flex-grow: 1;\"></div>\n            </div>\n          </div>\n        </form>\n      </div>\n    </label>\n    <p>Importing a video? Click <a href=\"/import\">here</a></p>\n  </div>\n{{end}}\n{{define \"scripts\"}}\n  <script type=\"application/javascript\" src=\"/static/upload.js\"></script>\n{{end}}\n"),
 	}
@@ -37,7 +37,7 @@ func init() {
 	// define dirs
 	dir1 := &embedded.EmbeddedDir{
 		Filename:   "",
-		DirModTime: time.Unix(1585355654, 0),
+		DirModTime: time.Unix(1585371597, 0),
 		ChildFiles: []*embedded.EmbeddedFile{
 			file2, // "base.html"
 			file3, // "import.html"
@@ -53,7 +53,7 @@ func init() {
 	// register embeddedBox
 	embedded.RegisterEmbeddedBox(`../templates`, &embedded.EmbeddedBox{
 		Name: `../templates`,
-		Time: time.Unix(1585355654, 0),
+		Time: time.Unix(1585371597, 0),
 		Dirs: map[string]*embedded.EmbeddedDir{
 			"": dir1,
 		},
@@ -127,7 +127,7 @@ func init() {
 	// define dirs
 	dir6 := &embedded.EmbeddedDir{
 		Filename:   "",
-		DirModTime: time.Unix(1585354927, 0),
+		DirModTime: time.Unix(1585371573, 0),
 		ChildFiles: []*embedded.EmbeddedFile{
 			file7, // "close-icon.png"
 			file8, // "defaulticon.jpg"
@@ -148,7 +148,7 @@ func init() {
 	// register embeddedBox
 	embedded.RegisterEmbeddedBox(`../static`, &embedded.EmbeddedBox{
 		Name: `../static`,
-		Time: time.Unix(1585354927, 0),
+		Time: time.Unix(1585371573, 0),
 		Dirs: map[string]*embedded.EmbeddedDir{
 			"": dir6,
 		},
