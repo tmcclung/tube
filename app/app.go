@@ -28,6 +28,15 @@ import (
 
 //go:generate rice embed-go
 
+var (
+	SizeMap = map[string]string{
+		"hd720": "720p",
+		"hd480": "480p",
+		"nhd":   "360p",
+		"film":  "240p",
+	}
+)
+
 // App represents main application.
 type App struct {
 	Config    *Config
@@ -311,6 +320,41 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// TODO: Make this a background job
+		// Resize for lower quality options
+		for size, suffix := range SizeMap {
+			log.
+				WithField("size", size).
+				WithField("vf", filepath.Base(vf)).
+				Info("resizing video for lower quality playback")
+			sf := fmt.Sprintf(
+				"%s#%s.mp4",
+				strings.TrimSuffix(vf, filepath.Ext(vf)),
+				suffix,
+			)
+
+			if err := utils.RunCmd(
+				a.Config.Transcoder.Timeout,
+				"ffmpeg",
+				"-y",
+				"-i", vf,
+				"-s", size,
+				"-c:v", "libx264",
+				"-c:a", "aac",
+				"-crf", "18",
+				"-strict", "-2",
+				"-loglevel", "quiet",
+				"-metadata", fmt.Sprintf("title=%s", title),
+				"-metadata", fmt.Sprintf("comment=%s", description),
+				sf,
+			); err != nil {
+				err := fmt.Errorf("error transcoding video: %w", err)
+				log.Error(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+
 		fmt.Fprintf(w, "Video successfully uploaded!")
 	} else {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -435,6 +479,42 @@ func (a *App) importHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		// TODO: Make this a background job
+		// Resize for lower quality options
+		for size, suffix := range SizeMap {
+			log.
+				WithField("size", size).
+				WithField("vf", filepath.Base(vf)).
+				Info("resizing video for lower quality playback")
+			sf := fmt.Sprintf(
+				"%s#%s.mp4",
+				strings.TrimSuffix(vf, filepath.Ext(vf)),
+				suffix,
+			)
+
+			if err := utils.RunCmd(
+				a.Config.Transcoder.Timeout,
+				"ffmpeg",
+				"-y",
+				"-i", vf,
+				"-s", size,
+				"-c:v", "libx264",
+				"-c:a", "aac",
+				"-crf", "18",
+				"-strict", "-2",
+				"-loglevel", "quiet",
+				"-metadata", fmt.Sprintf("title=%s", videoInfo.Title),
+				"-metadata", fmt.Sprintf("comment=%s", videoInfo.Description),
+				sf,
+			); err != nil {
+				err := fmt.Errorf("error transcoding video: %w", err)
+				log.Error(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+
 		fmt.Fprintf(w, "Video successfully imported!")
 	} else {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
