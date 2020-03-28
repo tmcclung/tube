@@ -1,0 +1,14 @@
+*~
+*.db
+*.bak
+*.key
+
+/dist
+/tube
+/.DS_Store
+
+videos/*
+!videos/README.md
+
+uploads/*
+!uploads/README.md
