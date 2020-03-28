@@ -1,14 +1,16 @@
 {{ define "content" }}
 {{ $playing := .Playing }}
-<div class="nav">
-  <ul>
-    <li><a {{ if eq $.Quality "" }}class="active"{{ end }} href="/v/{{ $playing.ID }}">fullHD</a></li>
-    <li><a {{ if eq $.Quality "720p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=720p">720p</a></li>
-    <li><a {{ if eq $.Quality "480p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=480p">480p</a></li>
-    <li><a {{ if eq $.Quality "360p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=360p">360p</a></li>
-    <li><a {{ if eq $.Quality "240p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=240p">240p</a></li>
-  </ul>
+<div class="topnav" id="myTopnav">
+  <a {{ if eq $.Quality "" }}class="active"{{ end }} href="/v/{{ $playing.ID }}">fullHD</a>
+  <a {{ if eq $.Quality "720p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=720p">720p</a>
+  <a {{ if eq $.Quality "480p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=480p">480p</a>
+  <a {{ if eq $.Quality "360p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=360p">360p</a>
+  <a {{ if eq $.Quality "240p" }}class="active"{{ end }} href="/v/{{ $playing.ID }}?quality=240p">240p</a>
+  <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+    <i class="fa fa-bars"></i>
+  </a>
 </div>
+
 <div id="player">
   {{ if $playing.ID }}
     <video id="video" controls preload="metadata" poster="/t/{{ $playing.ID}}">
@@ -43,3 +45,16 @@
   {{ end }}
 </div>
 {{end}}
+{{ define "scripts" }}
+<script type="application/javascript">
+/* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
+function myFunction() {
+  var x = document.getElementById("myTopnav");
+  if (x.className === "topnav") {
+    x.className += " responsive";
+  } else {
+    x.className = "topnav";
+  }
+}
+</script>
+{{ end }}
