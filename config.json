@@ -9,7 +9,8 @@
         "host": "0.0.0.0",
         "port": 8000,
         "store_path": "tube.db",
-        "upload_path": "uploads"
+        "upload_path": "uploads",
+        "max_upload_size": 104857600
     },
     "thumbnailer": {
         "timeout": 60

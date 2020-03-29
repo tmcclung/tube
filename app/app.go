@@ -210,8 +210,7 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 		ctx := &struct{}{}
 		a.render("upload", w, ctx)
 	} else if r.Method == "POST" {
-		// TODO: Move to a constant
-		r.ParseMultipartForm((10 << 20) * 10) // 100MB
+		r.ParseMultipartForm(a.Config.Server.MaxUploadSize)
 
 		file, handler, err := r.FormFile("video_file")
 		if err != nil {
@@ -413,6 +412,37 @@ func (a *App) importHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		defer os.Remove(uf.Name())
+
+		log.WithField("video_url", videoInfo.VideoURL).Info("requesting video size")
+
+		res, err := http.Head(videoInfo.VideoURL)
+		if err != nil {
+			err := fmt.Errorf("error getting size of video %w", err)
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		contentLength := utils.SafeParseInt64(res.Header.Get("Content-Length"), -1)
+		if contentLength == -1 {
+			err := fmt.Errorf("error calculating size of video")
+			log.WithField("contentLength", contentLength).Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if contentLength > a.Config.Server.MaxUploadSize {
+			err := fmt.Errorf(
+				"imported video would exceed maximum upload size of %s",
+				humanize.Bytes(uint64(a.Config.Server.MaxUploadSize)),
+			)
+			log.
+				WithField("contentLength", contentLength).
+				WithField("max_upload_size", a.Config.Server.MaxUploadSize).
+				Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		log.WithField("contentLength", contentLength).Info("downloading video")
 
 		if err := utils.Download(videoInfo.VideoURL, uf.Name()); err != nil {
 			err := fmt.Errorf("error downloading video %s: %w", url, err)

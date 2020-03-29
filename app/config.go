@@ -22,10 +22,11 @@ type PathConfig struct {
 
 // ServerConfig settings for App Server.
 type ServerConfig struct {
-	Host       string `json:"host"`
-	Port       int    `json:"port"`
-	StorePath  string `json:"store_path"`
-	UploadPath string `json:"upload_path"`
+	Host          string `json:"host"`
+	Port          int    `json:"port"`
+	StorePath     string `json:"store_path"`
+	UploadPath    string `json:"upload_path"`
+	MaxUploadSize int64  `json:"max_upload_size"`
 }
 
 // ThumbnailerConfig settings for Transcoder
@@ -61,15 +62,16 @@ func DefaultConfig() *Config {
 			},
 		},
 		Server: &ServerConfig{
-			Host:       "127.0.0.1",
-			Port:       0,
-			UploadPath: "uploads",
+			Host:          "0.0.0.0",
+			Port:          8000,
+			UploadPath:    "uploads",
+			MaxUploadSize: 104857600,
 		},
 		Thumbnailer: &ThumbnailerConfig{
-			Timeout: 30,
+			Timeout: 60,
 		},
 		Transcoder: &TranscoderConfig{
-			Timeout: 60,
+			Timeout: 300,
 		},
 		Feed: &FeedConfig{
 			ExternalURL: "http://localhost",

@@ -7,8 +7,18 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"time"
 )
+
+// SafeParseInt64 ...
+func SafeParseInt64(s string, d int64) int64 {
+	n, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return d
+	}
+	return n
+}
 
 func Download(url, filename string) error {
 	res, err := http.Get(url)
