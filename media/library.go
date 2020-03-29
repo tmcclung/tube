@@ -2,8 +2,10 @@ package media
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -38,6 +40,9 @@ func (lib *Library) AddPath(p *Path) error {
 		if p.Prefix == p2.Prefix {
 			return errors.New("media: duplicate library prefix")
 		}
+	}
+	if err := os.MkdirAll(p.Path, 07550); err != nil {
+		return fmt.Errorf("error creating library path %s: %w", p.Path, err)
 	}
 	lib.Paths[p.Path] = p
 	return nil

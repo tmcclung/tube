@@ -162,6 +162,12 @@ func (a *App) Run() error {
 		}
 		a.Watcher.Add(p.Path)
 	}
+	if err := os.MkdirAll(a.Config.Server.UploadPath, 0755); err != nil {
+		return fmt.Errorf(
+			"error creating upload path %s: %w",
+			a.Config.Server.UploadPath, err,
+		)
+	}
 	buildFeed(a)
 	go startWatcher(a)
 	return http.Serve(a.Listener, a.Router)

@@ -64,6 +64,7 @@ func DefaultConfig() *Config {
 		Server: &ServerConfig{
 			Host:          "0.0.0.0",
 			Port:          8000,
+			StorePath:     "tube.db",
 			UploadPath:    "uploads",
 			MaxUploadSize: 104857600,
 		},
@@ -74,7 +75,7 @@ func DefaultConfig() *Config {
 			Timeout: 300,
 		},
 		Feed: &FeedConfig{
-			ExternalURL: "http://localhost",
+			ExternalURL: "http://localhost:8000",
 		},
 	}
 }
