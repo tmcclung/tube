@@ -57,7 +57,16 @@ func CmdExists(cmd string) bool {
 
 // RunCmd ...
 func RunCmd(timeout int, command string, args ...string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
+	var (
+		ctx    context.Context
+		cancel context.CancelFunc
+	)
+
+	if timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
+	} else {
+		ctx, cancel = context.WithCancel(context.Background())
+	}
 	defer cancel()
 
 	cmd := exec.CommandContext(ctx, command, args...)
