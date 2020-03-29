@@ -72,24 +72,15 @@ const bytesToSize = (bytes) => {
     return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i]
 }
 
-const determineDragAndDropCapable = () => {
-    const div = document.createElement('div')
-    return (('draggable' in div)
-        || ('ondragstart' in div && 'ondrop' in div))
-        && 'FormData' in window
-        && 'FileReader' in window
-}
-
 /* MAIN */
 
 document.addEventListener('DOMContentLoaded', () => {
-    ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave']
-        .forEach((evt) => {
-            importForm.addEventListener(evt, (e) => {
-                e.preventDefault()
-                e.stopPropagation()
-            })
-        })
+  importInput.addEventListener("keyup", (e) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      importButton.click();
+    }
+  });
 }, false)
 
 const labelClicked = (e) => {

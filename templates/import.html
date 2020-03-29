@@ -3,7 +3,7 @@
     <label class="import-container" onclick="labelClicked(event)">
       <div class="import-wrapper">
         <form id="import-form" class="import-form" enctype="multipart/form-data" method="POST" action="/import">
-          <input id="import-input" type="text" placeholder="Enter a valid URL or ID" required onchange="urlSelected()" />
+          <input id="import-input" type="text" name="url" placeholder="Enter a valid URL or ID" required onchange="urlSelected()" />
           <div class="import-details">
             <span id="import-message" class="import-message">No URL entered</span>
             <div id="import-button-wrapper" class="import-button-wrapper">
