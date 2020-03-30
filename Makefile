@@ -1,4 +1,4 @@
-.PHONY: dev setup build install test release clean
+.PHONY: dev setup build install image test release clean
 
 CGO_ENABLED=0
 VERSION=$(shell git describe --abbrev=0 --tags)
@@ -22,6 +22,9 @@ build: clean
 
 install: build
 	@go install
+
+image:
+	@docker build -t prologic/tube .
 
 test: install
 	@go test
