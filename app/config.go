@@ -34,9 +34,13 @@ type ThumbnailerConfig struct {
 	Timeout int `json:"timeout"`
 }
 
+// Sizes a map of ffmpeg -s option to suffix. e.g: hd720 -> #720p
+type Sizes map[string]string
+
 // TranscoderConfig settings for Transcoder
 type TranscoderConfig struct {
-	Timeout int `json:"timeout"`
+	Timeout int   `json:"timeout"`
+	Sizes   Sizes `json:"sizes"`
 }
 
 // FeedConfig settings for App Feed.
@@ -73,6 +77,7 @@ func DefaultConfig() *Config {
 		},
 		Transcoder: &TranscoderConfig{
 			Timeout: 300,
+			Sizes:   Sizes(nil),
 		},
 		Feed: &FeedConfig{
 			ExternalURL: "http://localhost:8000",

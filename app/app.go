@@ -28,15 +28,6 @@ import (
 
 //go:generate rice embed-go
 
-var (
-	SizeMap = map[string]string{
-		"hd720": "720p",
-		"hd480": "480p",
-		"nhd":   "360p",
-		"film":  "240p",
-	}
-)
-
 // App represents main application.
 type App struct {
 	Config    *Config
@@ -327,7 +318,7 @@ func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 		// TODO: Make this a background job
 		// Resize for lower quality options
-		for size, suffix := range SizeMap {
+		for size, suffix := range a.Config.Transcoder.Sizes {
 			log.
 				WithField("size", size).
 				WithField("vf", filepath.Base(vf)).
@@ -518,7 +509,7 @@ func (a *App) importHandler(w http.ResponseWriter, r *http.Request) {
 
 		// TODO: Make this a background job
 		// Resize for lower quality options
-		for size, suffix := range SizeMap {
+		for size, suffix := range a.Config.Transcoder.Sizes {
 			log.
 				WithField("size", size).
 				WithField("vf", filepath.Base(vf)).
