@@ -75,10 +75,20 @@ const bytesToSize = (bytes) => {
 /* MAIN */
 
 document.addEventListener('DOMContentLoaded', () => {
-  importInput.addEventListener("keyup", (e) => {
-    if (e.keyCode === 13) {
+  importInput.addEventListener("keypress", (e) => {
+    if (e.keyCode == 9) {
+      urlSelected();
       e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    if (e.keyCode === 13 || e.keyCode == 10) {
+      e.preventDefault();
+      e.stopPropagation();
+      urlSelected();
       importButton.click();
+      return;
     }
   });
 }, false)
