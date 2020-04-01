@@ -10,8 +10,8 @@ import (
 type VimeoImporter struct{}
 
 func (i *VimeoImporter) GetVideoInfo(url string) (videoInfo VideoInfo, err error) {
-	if strings.HasPrefix(url, "vimeo:") {
-		url = strings.TrimPrefix(url, "vimeo:")
+	if strings.HasPrefix(strings.ToLower(url), "vimeo:") {
+		url = strings.TrimSpace(strings.SplitN(url, ":", 2)[1])
 	}
 
 	if !strings.HasPrefix(url, "http") {

@@ -10,8 +10,8 @@ import (
 type YoutubeImporter struct{}
 
 func (i *YoutubeImporter) GetVideoInfo(url string) (videoInfo VideoInfo, err error) {
-	if strings.HasPrefix(url, "youtube:") {
-		url = strings.TrimPrefix(url, "youtube:")
+	if strings.HasPrefix(strings.ToLower(url), "youtube:") {
+		url = strings.TrimSpace(strings.SplitN(url, ":", 2)[1])
 	}
 
 	info, err := ytdl.GetVideoInfo(url)
