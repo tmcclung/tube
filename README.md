@@ -23,6 +23,16 @@ MP4 H.265 AAC, multiple collections and RSS feed.
 
 ## Getting Started
 
+### Using Homebrew
+
+```#!sh
+$ brew tap prologic/tube
+$ brew install tube
+$ tube
+```
+
+Open http://127.0.0.1:8000/ in your Browser!
+
 ### Using a Binary
 
 1. Go grab the latest binary from the
