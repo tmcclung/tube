@@ -1,16 +1,4 @@
 ---
-brews:
-  -
-    github:
-      owner: prologic
-      name: homebrew-tap
-    homepage: "https://github.io/prologic/tube"
-    description: |
-      tube is a Youtube-like (without censorship and features you don't need!)
-      Video Sharing App written in Go which also supports automatic
-      transcoding to MP4 H.265 AAC, multiple collections and RSS feed.
-    dependencies:
-      - ffmpeg
 builds:
   -
     flags: -tags "static_build"
@@ -26,6 +14,18 @@ builds:
       - amd64
       - arm
       - arm64
+brews:
+  -
+    github:
+      owner: prologic
+      name: homebrew-tap
+    homepage: "https://github.io/prologic/tube"
+    description: |
+      tube is a Youtube-like (without censorship and features you don't need!)
+      Video Sharing App written in Go which also supports automatic
+      transcoding to MP4 H.265 AAC, multiple collections and RSS feed.
+    dependencies:
+      - ffmpeg
 sign:
   artifacts: checksum
 archive:
