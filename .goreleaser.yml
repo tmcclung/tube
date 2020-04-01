@@ -26,9 +26,9 @@ brews:
       transcoding to MP4 H.265 AAC, multiple collections and RSS feed.
     dependencies:
       - ffmpeg
-sign:
+signs:
   artifacts: checksum
-archive:
+archives:
   replacements:
     darwin: Darwin
     linux: Linux
