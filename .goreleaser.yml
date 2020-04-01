@@ -18,7 +18,7 @@ brews:
   -
     github:
       owner: prologic
-      name: homebrew-tap
+      name: homebrew-tube
     homepage: "https://github.io/prologic/tube"
     description: |
       tube is a Youtube-like (without censorship and features you don't need!)
