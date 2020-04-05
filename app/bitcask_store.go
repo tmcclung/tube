@@ -34,7 +34,7 @@ func (s *BitcaskStore) Migrate(collection, id string) error {
 
 		buf := make([]byte, 8)
 		binary.BigEndian.PutUint64(buf, uint64(oldViews))
-		err = s.db.Put([]byte(fmt.Sprintf("/views/%s/%s", id)), buf)
+		err = s.db.Put([]byte(fmt.Sprintf("/views/%s/%s", collection, id)), buf)
 		if err != nil {
 			err := fmt.Errorf("error storing new views for %s: %w", id, err)
 			return err
