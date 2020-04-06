@@ -181,6 +181,7 @@ Set `path` to the value of the path where you want to store videos and where
         }
     }
 }
+```
 
 ### Feed (RSS) Configuration
 
@@ -198,6 +199,7 @@ Set `path` to the value of the path where you want to store videos and where
         "copyright": "Copyright Text"
     }
 }
+```
 
 - Fill these values out as you see fit. If you are familiar with RSS
   these should be straight forward :)
