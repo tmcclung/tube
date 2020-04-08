@@ -204,7 +204,9 @@ func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 // HTTP handler for /upload
 func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		ctx := &struct{}{}
+		ctx := map[string]interface{}{
+			"MAX_UPLOAD_SIZE": a.Config.Server.MaxUploadSize,
+		}
 		a.render("upload", w, ctx)
 	} else if r.Method == "POST" {
 		r.ParseMultipartForm(a.Config.Server.MaxUploadSize)
