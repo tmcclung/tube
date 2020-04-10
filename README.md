@@ -57,7 +57,7 @@ Where `DOCKER_MACHINE_IP` is the IP Address of your Docker Node.
 ### From Source
 
 ```#!sh
-$ git clone https://github.com/proogic/tube
+$ git clone https://github.com/prologic/tube
 $ cd tube
 $ make
 $ ./tube
