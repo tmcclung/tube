@@ -219,6 +219,7 @@ github.com/wybiral/feeds v1.1.1 h1:KWE/JxA2XfP0My+C0wymqXrWK5oIyjRVbH5kpclsea0=
 github.com/wybiral/feeds v1.1.1/go.mod h1:MRSqtY+Oy5HMM51cF212xqU39MYbsYq/AH+PY8IfeM0=
 github.com/wybiral/torgo v0.0.0-20190413024533-a19a6c8a5048 h1:HQmSLHtGgSARs7VYzAID703qM/5m1il3X7f9AHfg/9c=
 github.com/wybiral/torgo v0.0.0-20190413024533-a19a6c8a5048/go.mod h1:LAhGyZRjuXZ/+uO4tqc5QV26hkdIo+yGHPfX1aubR0M=
+github.com/wybiral/tube v1.1.0 h1:D1vBdcHIxl4Qf85O6S2hN1K7y+1DwI/ixJdu4bq7R+o=
 github.com/xfrr/goffmpeg v0.0.0-20191120110122-53b0a69281d4 h1:iuT6IHMZMFQ8vZ67/a+v2kZ94PdK3o612FILXtnYBao=
 github.com/xfrr/goffmpeg v0.0.0-20191120110122-53b0a69281d4/go.mod h1:mL+qPvJWwu9An5a66+HyEJ7X7iEUSI09zX/Xl67XRXs=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=

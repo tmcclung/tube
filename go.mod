@@ -1,4 +1,4 @@
-module github.com/wybiral/tube
+module github.com/prologic/tube
 
 go 1.14
 

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/prologic/tube/app"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
-	"github.com/wybiral/tube/app"
 )
 
 var (

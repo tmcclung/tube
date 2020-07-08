@@ -19,11 +19,11 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/prologic/tube/importers"
+	"github.com/prologic/tube/media"
+	"github.com/prologic/tube/utils"
 	"github.com/renstrom/shortuuid"
 	log "github.com/sirupsen/logrus"
-	"github.com/wybiral/tube/importers"
-	"github.com/wybiral/tube/media"
-	"github.com/wybiral/tube/utils"
 )
 
 //go:generate rice embed-go
