@@ -26,6 +26,25 @@ brews:
       transcoding to MP4 H.265 AAC, multiple collections and RSS feed.
     dependencies:
       - ffmpeg
+    plist: |
+      <?xml version=‘1.0’ encoding=‘UTF-8’?>
+      <!DOCTYPE plist PUBLIC \“-//Apple Computer//DTD PLIST 1.0//EN\” \”http://www.apple.com/DTDs/PropertyList-1.0.dtd\” >
+      <plist version=‘1.0’>
+      <dict>
+      <key>Label</key><string>Tube</string>
+      <key>ProgramArguments</key>
+      <array>
+        <string>/usr/local/bin/tube</string>
+        <string>/usr/local/etc/tube/config.json
+      </array>
+      <key>WorkingDirectory</key>
+      <string>/usr/local</string>
+      <key>StandardOutPath</key><string>/usr/local/log/tube.log</string>
+      <key>RunAtLoad</key></true/>
+      <key>KeepAlive</key><true/>
+      <key>Disabled</key><false/>
+      </dict>
+      </plist>
 signs:
   -
     artifacts: checksum

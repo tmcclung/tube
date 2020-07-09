@@ -1,8 +1,9 @@
 // common variables
+let configMaxUploadSize = window['MAX_UPLOAD_SIZE'];
 let iBytesUploaded = 0
 let iBytesTotal = 0
 let iPreviousBytesLoaded = 0
-let iMaxFilesize = 104857600 // 100MB
+let iMaxFilesize = configMaxUploadSize ? (+configMaxUploadSize) : (100 * 1024 * 1024); // 100MB
 let timer = 0
 let uploadInProgress = 'n/a'
 let isProcessing = false

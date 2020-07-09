@@ -57,7 +57,7 @@ Where `DOCKER_MACHINE_IP` is the IP Address of your Docker Node.
 ### From Source
 
 ```#!sh
-$ git clone https://github.com/proogic/tube
+$ git clone https://github.com/prologic/tube
 $ cd tube
 $ make
 $ ./tube
@@ -75,6 +75,134 @@ Beyond this a "Production Deployment" is out-of-scope at this time for the
 documentation being provided here. Please don't hesitate to file an
 [Issue](https://github.com/prologic/tube/issues/new) however for ask for help
 or advice or contact the author directly!
+
+## Configuration
+
+`tube` can be confirued to suit your particular needs and comes by default with
+a sensbile set of defaults. There is also a default configuration at the
+top-level [config.json](/config.json) that you can use as a start point and
+modify to suite your needs.
+
+To Run `tube` with a provided configuration just pass the `-c /path/to/config`
+option; for example:
+
+```#!sh
+$ tube -c config.json
+```
+
+Everything in the configuration is optional as the builtin defaults are used
+if you do not supply anything, omit some sections or values or the configuration
+is invalid. Refer to the [default config.json](/config.json) for the builtin
+defaults (_this files matches the builtin defaults_).
+
+Here are some documentation on key configuration items:
+
+### Library Options and Upload / Video Paths(s)
+
+```#!json
+{
+    "library": [
+        {
+            "path": "videos",
+            "prefix": ""
+        }
+    ],
+}
+```
+
+Set `path` to the value of the path where you want to store videos and where
+`tube` will look for new videos.
+
+### Server Options / Upload Path and Max Upload Size
+
+```#!json
+{
+    "server": {
+        "host": "0.0.0.0",
+        "port": 8000,
+        "store_path": "tube.db",
+        "upload_path": "uploads",
+        "max_upload_size": 104857600
+    }
+}
+```
+
+- Set `host` to the interface you wish to bind to. If you want to only bind
+  your local machine (_ie: localhost_) set this to `127.0.0.1`.
+- Set `port` to any port you wish to bind the listening socket of the server
+  to. It doesn't matter what it is as long as there it doesn't collide with
+  a port already in use on your system.
+- Set `store_path` to a directory where `tube` will store statistics on videos
+  viewed.
+- Set `upload_path` to a directory that you wish to use as a temporary working
+  space for `tube` to store uploaded videos and process them. This can be a
+  tmpfs file system for example for faster I/O.
+- Set `max_upload_size` to the maximum number of bytes you wish to impose on
+  uploaded and imported videos. Upload(s)/Import(s) that exceed this size will
+  by denied by the server. This is a saftey measure so as to not DoS the
+  Tube server instance. Set it to a sensible value you see fit.
+
+### Thumbnailer / Transcoder Timeouts
+
+```#!json
+{
+    "thumbnailer": {
+        "timeout": 60
+    },
+    "transcoder": {
+        "timeout": 300,
+        "sizes": null
+    }
+}
+```
+
+- Set `timeout` to the no. of seconds to permit for thumbnail generation and
+  video transcoding. This value has to be large enough for thumbnail generation
+  and transcoding to take place depending on the `max_upload_size` permitted.
+  These values also depend on the underlying performance of the machine Tube
+  runs on. Use sensible values for your `max_upload_size` + system performance.
+  This is a safety measure to ensure background processed do not run away
+  and/or hog system resources. The thumbnailer and transcoder processes will
+  be killed if their execution time exceeds these values.
+
+- Set `sizes` to an map of `size` => `suffix` that you wish to support for
+  transcoding videos to lower quality on Upload/Import. This is especially
+  useful for serving up videos to users that have poor bandwidth or where
+  data charges are high for them. The following is a valid map:
+
+```#!json
+{
+    "transcoder": {
+        "sizes": {
+          "hd720": "720p",
+          "hd480": "480p",
+          "nhd":   "360p",
+          "film":  "240p"
+        }
+    }
+}
+```
+
+### Feed (RSS) Configuration
+
+```#!json
+{
+    "feed": {
+        "external_url": "",
+        "title": "Feed Title",
+        "link": "http://your-url.example/about",
+        "description": "Feed Description",
+        "author": {
+            "name": "Author Name",
+            "email": "author@somewhere.example"
+        },
+        "copyright": "Copyright Text"
+    }
+}
+```
+
+- Fill these values out as you see fit. If you are familiar with RSS
+  these should be straight forward :)
 
 ## Stargazers over time
 

@@ -19,11 +19,11 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/prologic/tube/importers"
+	"github.com/prologic/tube/media"
+	"github.com/prologic/tube/utils"
 	"github.com/renstrom/shortuuid"
 	log "github.com/sirupsen/logrus"
-	"github.com/wybiral/tube/importers"
-	"github.com/wybiral/tube/media"
-	"github.com/wybiral/tube/utils"
 )
 
 //go:generate rice embed-go
@@ -204,7 +204,9 @@ func (a *App) indexHandler(w http.ResponseWriter, r *http.Request) {
 // HTTP handler for /upload
 func (a *App) uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		ctx := &struct{}{}
+		ctx := map[string]interface{}{
+			"MAX_UPLOAD_SIZE": a.Config.Server.MaxUploadSize,
+		}
 		a.render("upload", w, ctx)
 	} else if r.Method == "POST" {
 		r.ParseMultipartForm(a.Config.Server.MaxUploadSize)
