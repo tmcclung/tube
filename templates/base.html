@@ -1,6 +1,7 @@
 {{define "base"}}
+{{ $playing := .Playing }}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: https://ogp.me/ns#">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +10,18 @@
     <link rel="stylesheet" type="text/css" href="/static/theme.css">
     <link rel="stylesheet" type="text/css" href="/static/upload.css">
     <link rel="stylesheet" type="text/css" href="/static/import.css">
+
+    {{if $playing.ID}}
+    <meta property="og:title" content="{{$playing.Title}}"/>
+    <meta property="og:type" content="video.other"/>
+    <meta property="og:image" content="/t/{{ $playing.ID}}"/>
+    <meta property="og:video" content="/v/{{ $playing.ID }}.mp4">
+    <meta property="og:video:url" content="/v/{{ $playing.ID }}.mp4">
+    <meta property="og:video:secure_url" content="/v/{{ $playing.ID }}.mp4">
+    <meta property="og:description" content="{{$playing.Description}}"/>
+    <meta property="og:site_name" content="Tube"/>
+    <meta property="og:url" content="/v/{{ $playing.ID }}"/>
+    {{end}}
 
     {{ template "stylesheets" . }}
     {{ template "css" . }}
