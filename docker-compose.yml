@@ -3,7 +3,7 @@ version: "3.8"
 
 services:
   tube:
-    image: prologic/tube
+    build: .
     command: -c /config.json
     configs:
       - source: config_json
